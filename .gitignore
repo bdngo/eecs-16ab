@@ -1,5 +1,6 @@
 # LaTeX stuff
 
+*.pdf
 *.aux
 *.log
 *.out
