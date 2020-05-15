@@ -1,0 +1,15 @@
+{
+  "name": "Bryan Ngo",
+  "email": "bryanngo@berkeley.edu",
+  "sid": "3034775862",
+  "q1a": "10",
+  "q1a-comment": "Correct",
+  "q1b": "10",
+  "q1b-comment": "Correct",
+  "q2a": "10",
+  "q2a-comment": "Correct",
+  "Problem Set Difficulty": "1",
+  "Hours Spent": "0",
+  "Teammate Headcount": "0",
+  "Attended Homework Party": "N"
+}

@@ -1,0 +1,398 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{pgfplots}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+
+\title{EECS 16B HW01}
+\author{Bryan Ngo}
+\date{2020-01-25}
+
+\begin{document}
+
+\maketitle
+
+\section{Existence and Uniqueness of Solutions to Differential Equations}
+
+\subsection{}
+
+\begin{align}
+	\frac{d}{dt} x_d(t) &= \alpha x_0 e^{\alpha t} = \alpha x_d(t) \\
+	x_d(0) &= x_0 e^0 = x_0
+\end{align}
+
+\subsection{}
+
+\begin{equation}
+	z(0) = \frac{y(0)}{x(0)} = \frac{x_0}{x_0} = 1
+\end{equation}
+
+\subsection{}
+
+\begin{align}
+	\frac{d}{dt} z(t) &= \frac{y'(t) x(t) - x'(t) y(t)}{x(t)^2} \\
+	&= \frac{\cancel{\alpha y(t) x(t)} - \cancel{\alpha x(t) y(t)}}{x(t)^2} = 0
+\end{align}
+Since \(\frac{d}{dt} z(t) = 0\), this implies that \(z(t)\) is a constant.
+Specifically, \(z(t) = 1\) due to the ratio of their initial conditions as we have shown above.
+
+\subsection{}
+
+Applying the transformation \(t = t_0 - \tau\),
+\begin{equation}
+	\frac{d}{d\tau} \tilde{x}(\tau) = \frac{d}{d\tau} x(t_0 - \tau) = -\alpha x(t_0 - \tau) = -\alpha \tilde{x}(\tau)
+\end{equation}
+
+\subsection{}
+
+Using the equation from \textbf{1.d},
+\begin{align}
+	\frac{d}{d\tau} \tilde{y}(\tau) &= -\alpha \tilde{y}(\tau) \\
+	\Rightarrow \tilde{y}(\tau) &= x_0 e^{-\alpha (t_0 - \tau)}
+\end{align}
+
+% TODO: add explanation/fix?
+
+\subsection{}
+
+\begin{equation}
+	\tilde{y}(0) = x_0 e^{-\alpha (t_0)} \neq x_0
+\end{equation}
+By contradiction, we establish uniqueness for all \(x_0 \in \mathbb{R}\).
+
+\subsection{}
+
+It is important to establish unique solutions to differential equations so that we can derive important information.
+If there were non-unique solutions, then multiple equations could describe behavior.
+
+\section{Digital-Analog Converter}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) node[ground]{} to[short] (0, 2) to[R=\(2R\)] (0, 4) to[short] (2, 4) to[R=\(R\)] (4, 4) to[R=\(R\)] (6, 4) to[short] (7, 4) node[ocirc]{\ \(V_{out}\)}
+	(2, 0) node[ground]{} to[short] (2, 2) to[R=\(2R\)] (2, 4)
+	(4, 0) node[ground]{} to[short] (4, 2) to[R=\(2R\)] (4, 4)
+	(6, 0) node[ground]{} to[V=\(V_2\), invert] (6, 2) to[R=\(2R\)] (6, 4)
+;\end{circuitikz}
+\end{center}
+
+The left nest of resistors ends up having an equivalent resistance of \(2R\).
+We can treat the resulting circuit as a voltage divider, with voltage
+\begin{equation}
+	V_{out} = V_2 \frac{2\cancel{R}}{4\cancel{R}} = \frac{1}{2} V_{DD}
+\end{equation}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) node[ground]{} to[short] (0, 2) to[R=\(2R\)] (0, 4) to[short] (2, 4) to[R=\(R\)] (4, 4) to[R=\(R\)] (6, 4) to[short] (7, 4) node[ocirc]{\ \(V_{out}\)}
+	(2, 0) node[ground]{} to[short] (2, 2) to[R=\(2R\)] (2, 4)
+	(4, 0) node[ground]{} to[V=\(V_1\), invert] (4, 2) to[R=\(2R\)] (4, 4)
+	(6, 0) node[ground]{} to[short] (6, 2) to[R=\(2R\)] (6, 4)
+;\end{circuitikz}
+\end{center}
+Simplifying and using NVA, we construct the matrix equation
+\begin{align}
+	&\left[\begin{array}{@{}cc|c@{}}
+	2 & -1 & \frac{V_1}{2} \\
+	-1 & \frac{3}{2} & 0
+	\end{array}\right] \\
+	&\Longrightarrow
+	\left[\begin{array}{@{}cc|c@{}}
+	1 & 0 & \frac{3 V_1}{8} \\
+	0 & 1 & \frac{V_1}{4}
+	\end{array}\right]
+\end{align}
+where \(V_{out} = \frac{1}{4}V_{DD}\).
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) node[ground]{} to[short] (0, 2) to[R=\(2R\)] (0, 4) to[short] (2, 4) to[R=\(R\)] (4, 4) to[R=\(R\)] (6, 4) to[short] (7, 4) node[ocirc]{\ \(V_{out}\)}
+	(2, 0) node[ground]{} to[V=\(V_0\), invert] (2, 2) to[R=\(2R\)] (2, 4)
+	(4, 0) node[ground]{} to[short] (4, 2) to[R=\(2R\)] (4, 4)
+	(6, 0) node[ground]{} to[short] (6, 2) to[R=\(2R\)] (6, 4)
+;\end{circuitikz}
+\end{center}
+Simplifying and using NVA, we construct the matrix equation
+\begin{align}
+	&\left[\begin{array}{@{}ccc|c@{}}
+	2 & -1 & 0 & \frac{V_1}{2} \\
+	-1 & \frac{5}{2} & -1 & 0 \\
+	0 & -1 & \frac{3}{2} & 0
+	\end{array}\right] \\
+	&\Longrightarrow
+	\left[\begin{array}{@{}ccc|c@{}}
+	1 & 0 & 0 & \frac{11 V_1}{32} \\
+	0 & 1 & 0 & \frac{3 V_1}{16} \\
+	0 & 0 & 1 & \frac{V_1}{8}
+	\end{array}\right]
+\end{align}
+where \(V_{out} = \frac{1}{8}V_{DD}\).
+
+\subsection{}
+
+By the principle of superposition, the DAC's output voltage when all three bits are on is simply the addition of each individual bit's voltage:
+\begin{equation}
+	V_{out} = \frac{7}{8} V_{DD}
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	V_{out} = V_{DD} \left(\frac{1}{2} b_2 + \frac{1}{4} b_1 + \frac{1}{8} b_0\right)
+\end{equation}
+
+\subsection{}
+
+The DAC computes an analog voltage by turning the value of each bit into a weighted sum that is then applied to the supply voltage.
+Each bit corresponds to a power of two, and is thus given an appropriate weight.
+
+\section{Transistor Switch Model}
+
+\subsection{}
+
+We can model the node \(V_{out1}\) as
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) node[ground]{} to[R=\(R_n\)] (0, 2) to[short] (2, 2) node[circ]{\ \(V_{out1}\)} to[C=\(C_n\)] (2, 0) node[ground]{}
+	(2, 2) to[C=\(C_p\)] (2, 4) node[vcc]{\(V_{DD}\)}
+;\end{circuitikz}
+\end{center}
+Writing out the node equation for \(V_{out1}\) yields
+\begin{equation}
+	\frac{V_{out1}}{R} + C_n \frac{d}{dt} V_{out1} - C_p \frac{d}{dt} (V_{DD} - V_{out1}) = 0
+\end{equation}
+
+\subsection{}
+
+\begin{align}
+	\frac{V_{out1}}{R} + C_n \frac{d}{dt} V_{out1} - \cancel{C_p \frac{d}{dt} V_{DD}} + C_p \frac{d}{dt} V_{out1} &= 0 \\
+	\frac{d}{dt} V_{out1} &= -\frac{V_{out1}}{\underbrace{R (C_p + C_n)}_{\tau}} \\
+	\int \frac{1}{V_{out1}} \, dV_{out1} &= \int -\frac{1}{\tau} \, dt \\
+	\ln|V_{out1}| &= -\frac{1}{\tau} t + C \\
+	V_{out1} &= V_0 e^{-\frac{1}{\tau} t}
+\end{align}
+Plugging in our initial condition \(V_{out1}(0) = V_{DD}\),
+\begin{equation}
+	V_{out1}(0) = V_0 = V_{DD}
+\end{equation}
+So our solution is
+\begin{equation}
+	V_{out1}(t) = V_{DD} e^{-\frac{1}{\tau} t}
+\end{equation}
+
+\subsection{}
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel = {\(t\)},
+		ylabel = {\(V_{out1}(t)\)},
+		xmin = 0, xmax = 5,
+		ymin = 0, ymax = 1,
+		xtick = {0},	ytick = {0},
+		extra tick style = {grid=major},
+		extra x ticks = {ln(3)},
+		extra x tick labels = {\(\tau \ln(3)\)},
+		extra y ticks = {1, 1/3},
+		extra y tick labels = {\(V_{DD}\), \(\frac{1}{3} V_{DD}\)},
+	]
+		\addplot[
+			domain = 0:5,
+			samples = 100,
+			color = blue
+		]
+		{exp(-x)};
+		\addlegendentry{\(V_{DD} e^{-\frac{1}{\tau} t}\)}
+		
+		\addplot[
+		domain = 0:5,
+		samples = 100,
+		color = red
+		]
+		{1-x};
+		\addlegendentry{\(V_{DD} \left(1 - \frac{1}{\tau} t\right)\)}
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 4) node[vcc]{\(V_{DD}\)} to[R=\(R_p\)] (0, 2) to[short] (2, 2) node[circ]{\ \(V_{out1}\)} to[C=\(C_p\)] (2, 4) node[vcc]{\(V_{DD}\)}
+	(2, 2) to[C=\(C_n\)] (2, 0) node[ground]{}
+;\end{circuitikz}
+\end{center}
+The node equation is
+\begin{equation}
+	C_n \frac{d}{dt} V_{out1} - C_p \frac{d}{dt} (\cancel{V_{DD}} - V_{out1}) - \frac{V_{DD} - V_{out1}}{R_p} = 0
+\end{equation}
+Solving,
+\begin{align}
+	C_n \frac{d}{dt} V_{out1} + C_p \frac{d}{dt} V_{out1} - \frac{V_{DD} - V_{out1}}{R_p} &= 0 \\
+	\frac{d}{dt} V_{out1} &= \frac{V_{DD} - V_{out1}}{\underbrace{R_p (C_p + C_n)}_{\tau}} \\
+	\int \frac{1}{V_{DD} - V_{out1}} \, dV_{out1} &= \int \frac{1}{\tau} \, d\tau \\
+	-\ln|V_{DD} - V_{out1}| &= \frac{1}{\tau} + C \\
+	V_{DD} - V_{out1} &= V_0 e^{-\frac{1}{\tau} t} \\  
+	V_{out1}(t) &= V_{DD} - V_0 e^{-\frac{1}{\tau} t}
+\end{align}
+Plugging in the initial condition \(V_{out1}(0) = 0\),
+\begin{align}
+	0 &= V_{DD} - V_0 \\
+	V_0 &= V_{DD}
+\end{align}
+Yielding the final equation
+\begin{equation}
+	V_{out1}(t) = V_{DD} (1 - e^{-\frac{1}{\tau} t})
+\end{equation}
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel = {\(t\)},
+		ylabel = {\(V_{out1}(t)\)},
+		xmin = 0, xmax = 5,
+		ymin = 0, ymax = 1,
+		xtick = {0}, ytick = {0},
+		extra tick style = {grid=major},
+		extra y ticks = {1},
+		extra y tick labels = {\(V_{DD}\)},
+	]
+		\addplot[
+		domain = 0:5,
+		samples = 100,
+		color = blue
+		]
+		{1 - exp(-x)};
+		\addlegendentry{\(V_{DD} (1 - e^{-\frac{1}{\tau} t})\)}
+		
+		\addplot[
+		domain = 0:5,
+		samples = 100,
+		color = red
+		]
+		{x};
+		\addlegendentry{\(\frac{V_{DD}}{\tau}t\)}
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+
+Since the circuit goes through a voltage cycle of \(V_{DD}\), then the total charge is \(V_{DD} (C_p + C_n)\) by definition of a capacitor.
+Plugging in, this gives us \SI{2}{\femto\coulomb}.
+
+\section{RC Circuit}
+
+\subsection{}
+
+\begin{align}
+	I(0) &= \frac{V_s}{R} \\
+	\lim_{t \to \infty} I(t) &= 0
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	V_s - V_R(t) - V_C(t) &= 0 \\
+	V_s - I_C(t)R - \frac{1}{C} Q_C(t) &= 0 \\
+	R\frac{d}{dt} I_C(t) + \frac{1}{C} I_C(t) &= 0
+\end{align}
+
+\subsection{}
+
+The eigenvalue \(\lambda = -\frac{1}{RC}\).
+
+\subsection{}
+
+\begin{align}
+	\frac{d}{dt} I_C(t) &= -\frac{1}{RC} I_C(t) \\
+	\int \frac{1}{I_C} \, dI_C &= \int -\frac{1}{RC} \, dt \\
+	\ln|I_C| &= -\frac{1}{RC} t + K \\
+	I_C(t) &= I_0 e^{-\frac{1}{RC} t}
+\end{align}
+Plugging in the initial values,
+\begin{align}
+	I_C(0) &= I_0 = \frac{V_s}{R} \\
+	I_C(t) &= \frac{V_s}{R} e^{-\frac{1}{RC} t}
+\end{align}
+
+\subsection{}
+
+Solving for \(0.05 \frac{V_s}{R}\),
+\begin{align}
+	0.05 &= e^{-\frac{1}{RC} t} \\
+	\ln(0.05) &= -\frac{1}{RC} t \\
+	t &= -RC \cdot \ln(0.05) \rightsquigarrow \SI{2.99}{\milli\second}
+\end{align}
+
+\subsection{}
+
+\begin{enumerate}
+	\item Make \(R\) smaller.
+	\item Make \(C\) smaller.
+\end{enumerate}
+
+\subsection{}
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel = {\(t\) [\si{\milli\second}]},
+		ylabel = {\(I_C(t)\) [\si{\ampere}]},
+		xmin = 0, xmax = 0.005, xtick = \empty,
+		ymin = 0, ymax = 0.05, ytick = \empty,
+		extra x ticks = {0.001, 0.002, 0.003},
+		extra x tick labels = {\(\tau\), \(2\tau\), \(3\tau\)},
+		extra y ticks = {0.05/exp(1), 0.05/exp(2), 0.05/exp(3)},
+		extra y tick labels = {\(I_C(\tau)\), \(I_C(2\tau)\), \(I_C(3\tau)\)},
+		extra tick style = {grid=major}
+	]
+		\addplot[
+		domain = 0:0.005,
+		samples = 100,
+		color = blue
+		]
+		{0.05*exp(-1000*x)};
+		\addlegendentry{\(\frac{V_s}{R} e^{-\frac{1}{RC} t}\)}
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+\renewcommand{\theenumi}{\alph{enumi}}
+\begin{enumerate}
+	\item I used Note 3 from 28 January.
+	\item I worked on this homework by myself.
+	\item I worked on this homework in one sitting.
+	\item I spend 4 hours on this homework.
+\end{enumerate}
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

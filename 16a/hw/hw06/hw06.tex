@@ -1,0 +1,184 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+%opening
+\title{EECS 16A HW06}
+\author{Bryan Ngo}
+\date{2019-10-12}
+
+\begin{document}
+
+\maketitle
+
+\section{Elementary Matrices}
+
+\subsection{}
+
+\subsubsection{}
+
+\begin{equation}
+	\mathbf{E}_1 = \begin{bmatrix}
+	0 & 0 & 1 & 0 \\
+	0 & 1 & 0 & 0 \\
+	1 & 0 & 0 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+
+\subsubsection{}
+
+\begin{equation}
+	\mathbf{E}_2 = \begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & -5 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+
+\subsubsection{}
+
+\begin{equation}
+	\mathbf{E}_3 = \begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 3 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+
+\subsubsection{}
+
+\begin{equation}
+	\mathbf{E}_4 = \begin{bmatrix}
+	1 & -1 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+The composite of the above matrix followed by the previous problem is 
+\begin{equation}
+	\mathbf{E}_3 \mathbf{E}_4 = 
+	\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 3 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+	1 & -1 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	1 & -1 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 3 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+
+\subsection{}
+
+\(\mathbf{E}_1\) makes sense as the negative of \(r_1\) is moved down to \(r_4\). 
+\(\mathbf{E}_2\) makes sense as \(r_2\) is multiplied by \(2\) and its negative is moved down to \(r_3\). 
+\(\mathbf{E}_3\) makes sense as \(r_3\) is moved up to \(r_4\) and all of \(r_3\) is multiplied by \(-1\). 
+Finally, \(\mathbf{E}_4\) makes sense as \(r_4\) is multiplied by 6 and its negative is moved up to \(r_3\), then \(-5r_4\) is moved up to \(r_1\), before \(r_4\) is multiplied by \(-1\). \\
+\\
+Verifying the matrix multiplication, 
+\begin{align}
+	\mathbf{E}_4 \mathbf{E}_3 \mathbf{E}_2 \mathbf{E}_1 &= 
+	\left(\begin{bmatrix}
+	1 & 0 & 0 & -5 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & -6 \\
+	0 & 0 & 0 & -1
+	\end{bmatrix}
+	\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & -1 & 0 \\
+	0 & 0 & 1 & 1
+	\end{bmatrix}\right)
+	\left(\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & -2 & 1 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	-1 & 0 & 0 & 1
+	\end{bmatrix}\right) \\
+	&= 
+	\begin{bmatrix}
+	1 & 0 & -5 & -5 \\
+	0 & 1 & 0 & 0 \\
+	0 & 0 & -7 & -6 \\
+	0 & 0 & -1 & -1
+	\end{bmatrix}
+	\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 \\
+	0 & -2 & 1 & 0 \\
+	-1 & 0 & 0 & 1
+	\end{bmatrix} \\
+	&=
+	\begin{bmatrix}
+	6 & 10 & -5 & -5 \\
+	0 & 1 & 0 & 0 \\
+	6 & 14 & -7 & -6 \\
+	1 & 2 & -1 & -1 \\
+	\end{bmatrix}
+\end{align}
+Multiplying \(\mathbf{EA}\), 
+\begin{align}
+	\mathbf{EA} &= 
+	\begin{bmatrix}
+	6 & 10 & -5 & -5 \\
+	0 & 1 & 0 & 0 \\
+	6 & 14 & -7 & -6 \\
+	1 & 2 & -1 & -1 \\
+	\end{bmatrix}
+	\left[\begin{array}{@{}cccc|c@{}}
+	1 & 0 & 0 & -5 & 15 \\
+	0 & 1 & 0 & 0 & -7 \\
+	0 & 2 & -1 & 6 & 3 \\
+	1 & 0 & 1 & -12 & -5
+	\end{array}\right]
+	&=
+	\left[\begin{array}{@{}cccc|c@{}}
+	1 & 0 & 0 & 0 & 30 \\
+	0 & 1 & 0 & 0 & -7 \\
+	0 & 0 & 1 & 0 & 1 \\
+	0 & 0 & 0 & 1 & 3
+	\end{array}\right]
+\end{align}
+
+\section{Homework Process and Study Group}
+
+I did this homework by myself. 
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

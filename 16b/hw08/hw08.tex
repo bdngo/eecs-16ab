@@ -1,0 +1,344 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\title{EECS 16B HW08}
+\author{Bryan Ngo}
+\date{2020-03-27}
+
+\begin{document}
+
+\maketitle
+
+\section{SVD}
+
+\begin{equation}
+	\bm{A} = \begin{bmatrix}
+	-1 & 1 & 5 \\
+	3 & 1 & -1 \\
+	2 & -1 & 4
+	\end{bmatrix}
+\end{equation}
+
+\subsection{}
+
+\begin{align}
+	\tpose{\bm{A}} \bm{A} &= \begin{bmatrix}
+	-1 & 3 & 2 \\
+	1 & 1 & -1 \\
+	5 & -1 & 4
+	\end{bmatrix}
+	\begin{bmatrix}
+	-1 & 1 & 5 \\
+	3 & 1 & -1 \\
+	2 & -1 & 4
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	14 & 0 & 0 \\
+	0 & 3 & 0 \\
+	0 & 0 & 42
+	\end{bmatrix} \\
+	\bm{A} \tpose{\bm{A}} &= \begin{bmatrix}
+	-1 & 1 & 5 \\
+	3 & 1 & -1 \\
+	2 & -1 & 4
+	\end{bmatrix}
+	\begin{bmatrix}
+	-1 & 3 & 2 \\
+	1 & 1 & -1 \\
+	5 & -1 & 4
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	27 & -7 & 17 \\
+	-7 & 11 & 1 \\
+	17 & 1 & 21
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+Using \(\tpose{\bm{A}} \bm{A}\),
+\begin{align}
+	\lambda &= \{42 \geq 14 \geq 3\} \\
+	\bm{v} &= \{\unit{k}, \unit{\imath}, \unit{\jmath}\}
+\end{align}
+Thus, our \(\bm{u}_i\) is
+\begin{align}
+	\bm{u}_1 &= \frac{1}{\sqrt{42}} \bm{A} \bm{v}_1 = \frac{1}{\sqrt{42}} \begin{bmatrix}
+	5 \\
+	-1 \\
+	4
+	\end{bmatrix} \\
+	\bm{u}_2 &= \frac{1}{\sqrt{14}} \begin{bmatrix}
+	-1 \\
+	3 \\
+	2
+	\end{bmatrix} \\
+	\bm{u}_3 &= \frac{1}{\sqrt{3}} \begin{bmatrix}
+	1 \\
+	1 \\
+	-1
+	\end{bmatrix}
+\end{align}
+So our SVD is
+\begin{equation}
+	\bm{A} = \frac{1}{\sqrt{42}} \begin{bmatrix}
+	5 \\
+	-1 \\
+	4
+	\end{bmatrix} \begin{bmatrix}
+	0 & 0 & 1
+	\end{bmatrix}
+	+
+	\frac{1}{\sqrt{14}} \begin{bmatrix}
+	-1 \\
+	3 \\
+	2
+	\end{bmatrix} \begin{bmatrix}
+	1 & 0 & 0
+	\end{bmatrix}
+	+
+	\frac{1}{\sqrt{3}} \begin{bmatrix}
+	1 \\
+	1 \\
+	-1
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 0
+	\end{bmatrix}
+\end{equation}
+
+\section{Rank 1 Decomposition}
+
+\subsection{}
+
+\(\bm{C}_1\) has rank 2, so we need 2 rank 1 matrices to represent it.
+\begin{equation}
+	\bm{C}_1 = \frac{1}{\sqrt{8}} \begin{bmatrix}
+	1 \\
+	-1 \\
+	1 \\
+	-1 \\
+	1 \\
+	-1 \\
+	1 \\
+	-1
+	\end{bmatrix} \begin{bmatrix}
+	1 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+	\end{bmatrix}
+	+
+	\frac{1}{\sqrt{8}} \begin{bmatrix}
+	-1 \\
+	1 \\
+	-1 \\
+	1 \\
+	-1 \\
+	1 \\
+	-1 \\
+	1
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 0 & 0 & 0 & 0 & 0 & 0
+	\end{bmatrix}
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	\bm{C}_2 = \frac{1}{2} \begin{bmatrix}
+	1 \\
+	0 \\
+	1 \\
+	0 \\
+	1 \\
+	0 \\
+	1 \\
+	0
+	\end{bmatrix} \begin{bmatrix}
+	1 & 0 & 1 & 0 & 1 & 0 & 1 & 0
+	\end{bmatrix}
+	+
+	\frac{1}{2} \begin{bmatrix}
+	0 \\
+	1 \\
+	0 \\
+	1 \\
+	0 \\
+	1 \\
+	0 \\
+	1
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 0 & 1 & 0 & 1 & 0 & 1
+	\end{bmatrix}
+\end{equation}
+
+\subsection{}
+
+\subsubsection{}
+
+\begin{equation}
+	\bm{F}_{\text{CH}} = \frac{1}{\sqrt{3}} \begin{bmatrix}
+	0 \\
+	1 \\
+	1 \\
+	1 \\
+	0
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 1 & 1 & 0
+	\end{bmatrix}
+	+
+	\frac{1}{\sqrt{2}} \begin{bmatrix}
+	0 \\
+	1 \\
+	0 \\
+	1 \\
+	0
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 0 & 1 & 0
+	\end{bmatrix}
+\end{equation}
+
+\subsubsection{}
+
+\begin{equation}
+	\bm{F}_{\text{CH}} = \frac{1}{\sqrt{3}} \begin{bmatrix}
+	0 \\
+	1 \\
+	1 \\
+	1 \\
+	0
+	\end{bmatrix} \begin{bmatrix}
+	0 & 0 & 1 & 0 & 0
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	0 \\
+	0 \\
+	1 \\
+	0 \\
+	0
+	\end{bmatrix} \begin{bmatrix}
+	0 & 1 & 0 & 1 & 0
+	\end{bmatrix}
+\end{equation}
+
+\section{Open-Loop Control of SIXT33N}
+
+\begin{gather}
+	u[t] = \frac{v^\ast + \beta}{\theta} \\
+	v_L[t] = d_L[t + 1] - d_L[t] = \theta_L u_L[t] - \beta_L \\
+	v_R[t] = d_R[t + 1] - d_R[t] = \theta_R u_R[t] - \beta_R
+\end{gather}
+
+\subsection{}
+
+Inductively finding \(d_L[1], d_R[1]\),
+\begin{align}
+	d_L[1] &= v_L[0] + \cancelto{0}{d_L[0]} = \theta_L u_L[0] - \beta_L = 255\theta_L - \beta_L \\
+	d_L[t + 1] &= v_L[t] + d_L[t] = \theta_L u_L[t] - \beta_L + t(255\theta_L - \beta_L) \\
+	d_L[t_p] &= t_p(255\theta_L - \beta_L) \\
+	d_R[t_p] &= t_p(255\theta_R - \beta_R)
+\end{align}
+
+\subsection{}
+
+\begin{equation}
+	\delta[t_p] = t_p(255\theta_L - 255\theta_R - \beta_L + \beta_R)
+\end{equation}
+If \(\theta_L = \theta_R\) and \(\beta_L = \beta_R\), \(\delta[t_p] = 0\), so the car does not turn after the pulse.
+Similarly, if \(\theta_L \neq \theta_R\) and \(\beta_L \neq \beta_R\), \(\delta[t_p] \neq 0\) except in a few degenerate cases, so the car will generally be turning after the pulse.
+
+\subsection{}
+
+By induction,
+\begin{align}
+	\delta[t_p + 1] &= d_L[t_p + 1] - d_R[t_p + 1] \\
+	&= \left(\theta_L \frac{v^\ast + \beta_L}{\theta_L} - \beta_L\right) - \left(\theta_R \frac{v^\ast + \beta_R}{\theta_R} - \beta_R\right) + \delta_0 = \delta_0 \\
+	\Rightarrow \lim_{t \to \infty} \delta[t] &= \delta_0
+\end{align}
+The car does not seem to deviate from \(\delta_0\).
+
+\subsection{}
+
+\begin{align}
+	\delta[t_p + 1] &= \left((\theta_L + \Delta \theta_L) \frac{v^\ast + \beta_L}{\theta_L} - (\beta_L + \Delta \beta_L)\right) - \left((\theta_R + \Delta \theta_R) \frac{v^\ast + \beta_R}{\theta_R} - (\beta_R + \Delta \beta_R)\right) + \delta_0 \\
+	&= \left(\frac{\Delta \theta_L (v^\ast + \beta_L)}{\theta_L} - \Delta \beta_L\right) - \left(\frac{\Delta \theta_R (v^\ast + \beta_R)}{\theta_R} - \Delta \beta_R\right) + \delta_0 \\
+	\Rightarrow \delta[t]|_{t > t_p} &= t \cdot \delta[t_p + 1]
+\end{align}
+The car seems to deviate from \(\delta_0\), assuming nonzero deviance factors.
+
+\section{Closed-Loop Control of SIXT33N}
+
+\begin{align}
+	d_L[k + 1] - d_L[k] &= v^\ast - k_L\delta[k] \\
+	d_R[k + 1] - d_R[k] &= v^\ast - k_R\delta[k] \\
+	u_L[k] &= \frac{v^\ast + \beta_L}{\theta_L} - k_L \frac{\delta[k]}{\theta_L} \\
+	u_R[k] &= \frac{v^\ast + \beta_R}{\theta_R} + k_R \frac{\delta[k]}{\theta_R}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	\delta[k + 1] &= d_L[k + 1] - d_R[k + 1] \\
+	&= \cancel{v^\ast} - k_L\delta[k] + d_L[k] - \cancel{v^\ast} - k_R\delta[k] - d_R[k] \\
+	&= (1 - k_L - k_R) \delta[k]
+\end{align}
+
+\subsection{}
+
+The eigenvalue is \(\lambda = 1 - k_L - k_R\).
+\(\lambda \in (-1, 0] \cup [0, 1)\) is functionally identical to \(\lambda \in (-1, 1)\) because \(0 \in (-1, 1)\).
+Finding the values of \(k_L, k_R\),
+\begin{align}
+	1 - k_L - k_R &\in (-1, 1) \\
+	-k_L - k_R &\in (-2, 0) \\
+	k_L + k_R &\in (0, -2)
+\end{align}
+
+\subsection{}
+
+Substituting \(u_L, u_R\) into their respective distance equations,
+\begin{align}
+	\delta[k + 1] &= \left((\theta_L + \Delta \theta_L) \left(\frac{v^\ast + \beta_L - k_L \delta[k]}{\theta_L}\right) - (\beta_L + \Delta \beta_L)\right) - \left((\theta_R + \Delta \theta_R) \left(\frac{v^\ast + \beta_R + k_R \delta[k]}{\theta_R}\right) - (\beta_R + \Delta \beta_R)\right) + \delta[k] \\
+	&= \left(\Delta \theta_L \left(\frac{v^\ast + \beta_L - k_L \delta[k]}{\theta_L}\right) - k_L \delta[k] - \Delta \beta_L\right) - \left(\Delta \theta_R \left(\frac{v^\ast + \beta_R - k_R \delta[k]}{\theta_R}\right) + k_R \delta[k] - \Delta \beta_R\right) + \delta[k] \\
+	&= \underbrace{\left(\Delta \theta_L \left(\frac{v^\ast + \beta_L}{\theta_L}\right) - \Delta \beta_L\right) - \left(\Delta \theta_R \left(\frac{v^\ast + \beta_R}{\theta_R}\right) - \Delta \beta_R\right)}_{c} + \underbrace{\left(1 - k_L - k_R + \frac{\Delta \theta_L k_L}{\theta_L} + \frac{\Delta \theta_R k_R}{\theta_R}\right)}_{\lambda} \delta[k]
+\end{align}
+This is better than open-loop control because we reduce the difference by an exponential amount rather than having it explode to infinity.
+
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+\begin{enumerate}
+	\item I used Lecture 9B notes.
+	\item I worked on this homework by myself.
+	\item I worked on this homework in one sitting,
+	\item Questions 3 and 4 are cumbersome.
+	\item 3 hours.
+\end{enumerate}
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

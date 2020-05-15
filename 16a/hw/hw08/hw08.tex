@@ -1,0 +1,297 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+%opening
+\title{EECS 16A HW08}
+\author{Bryan Ngo}
+\date{2019-10-24}
+
+\begin{document}
+
+\maketitle
+
+\section{Power Analysis}
+
+\begin{circuitikz}[american]
+	\draw (0, 3) to[V=\SI{5}{\volt}, i>^=\(I_{V_s}\)] (0, 0);
+	\draw (0, 3) to[short] (6, 3);
+	\draw (6, 0) to[I=\SI{5}{\milli\ampere}, v_>=\(V_{I_s}\)] (6, 3);
+	\draw (6, 0) to[short] (0, 0);
+	\draw (3, 3) to[R=\SI{5}{\kilo\ohm}, i>^=\(I_R\), v_>=\(V_R\)] (3, 0);
+	\draw (0, 0) node[ground]{};
+\end{circuitikz}
+
+\subsection{}
+
+The power equations are 
+\begin{align}
+	P_R &= I_R V_R \\
+	P_{V_s} &= I_{V_s} V_s \\
+	P_{I_s} &= I_s V_{I_s}
+\end{align}
+
+Using superposition, we can easily determine the voltage \(V_R\). 
+Setting \(I_s = 0\), KVL means that \(V_R = V_s\). 
+Setting \(V_s = 0\), the short circuit means there is no voltage across the resistor, meaning that the total voltage across the resistor is \(V_s\). 
+KVL also tells us that \(V_{I_s} = -V_s\). 
+The current through our resistor is \(I_R = \frac{V_R}{R} = \frac{V_s}{R}\). 
+KCL tells us that \(I_{V_s} = I_s - I_R = I_s - \frac{V_s}{R}\). 
+This means our final power equations are
+\begin{align}
+	P_R &= \frac{V_s^2}{R} \\
+	P_{V_s} &= \left(I_s - \frac{V_s}{R}\right) V_s \\
+	P_{I_s} &= I_s (-V_s)
+\end{align}
+
+\subsection{}
+
+Calculating the power draw of each element, 
+\begin{align}
+	P_R &= \frac{V_s^2}{R} = \frac{25 \ \si{\square\volt}}{5 \ \si{\ohm}} = \SI{5}{\milli\watt} \\
+	P_{V_s} &= \left(I_s - \frac{V_s}{R}\right) V_s = (\SI{4}{\milli\ampere}) (\SI{5}{\volt}) = \SI{20}{\milli\watt} \\
+	P_{I_s} &= I_s (-V_s) = (\SI{5}{\milli\ampere}) (\SI{-5}{\volt}) = \SI{-25}{\milli\watt}
+\end{align}
+
+\subsection{}
+
+Solving for the new current, 
+\begin{equation}
+	I_s = \frac{40 \ \si{\milli\watt}}{-5 \ \si{\volt}} = \SI{-8}{\milli\ampere}
+\end{equation}
+Recalculating our power draws, 
+\begin{align}
+	P_R &= \frac{V_s^2}{R} = \frac{25 \ \si{\square\volt}}{5 \ \si{\ohm}} = \SI{5}{\milli\watt} \\
+	P_{V_s} &= \left(I_s - \frac{V_s}{R}\right) V_s = (\SI{-9}{\milli\ampere}) (\SI{5}{\volt}) = \SI{-45}{\milli\watt} \\
+	P_{I_s} &= I_s (-V_s) = (\SI{-8}{\milli\ampere}) (\SI{-5}{\volt}) = \SI{40}{\milli\watt}
+\end{align}
+
+\section{Maximum Power Transfer}
+
+\subsection{}
+
+The voltage across \(R_L\) is 
+\begin{equation}
+	V_L = I_L R_L
+\end{equation}
+In order to maximize the voltage drop, \(R_L = \infty \ \si{\ohm}\), i.e. an open circuit. 
+Intuitively, this makes sense because an infinite electric potential barrier implies infinite resistance to current flow. 
+This means that 
+\begin{align}
+	V_L &= \infty \ \si{\volt} \\
+	I_L &= \SI{0}{\ampere}
+\end{align}
+\(P_L\) is indeterminate since we get \(P_L = 0 \cdot \infty\). 
+
+\subsection{}
+
+The current through \(R_L\) is
+\begin{equation}
+	I_L = \frac{V_L}{R_L}
+\end{equation}
+If we take a limit, 
+\begin{equation}
+	\lim_{R_L \to 0+} I_L = \lim_{R_L \to 0+} \frac{V_L}{R_L} = \infty
+\end{equation}
+So the resistance for maximum current is exactly \SI{0}{\ohm}, i.e. a short circuit. 
+This means that 
+\begin{align}
+	V_L &= \SI{0}{\volt} \\
+	I_L &= I_L \\
+	P_L &= 0 \cdot I_L = \SI{0}{\watt}
+\end{align}
+
+\subsection{}
+
+The power through \(R_L\) is 
+\begin{equation}
+	P_{R_L} = I_L V_L
+\end{equation}
+Using equivalent resistance and the voltage divider, we can determine \(I_L, V_L\) to be
+\begin{align}
+	I_L &= \frac{V_s}{R_s + R_L} \\
+	V_L &= V_s \frac{R_L}{R_S + R_L}
+\end{align}
+Plugging in, our new power equation is 
+\begin{equation}
+	P_{R_L} = \frac{V_s^2 R_L}{(R_s + R_L)^2}
+\end{equation}
+Taking the derivative with respect to \(R_L\) on both sides and setting to zero, 
+\begin{align}
+	\frac{dP_{R_L}}{dR_L} &= \cancel{V_s^2} ((R_s + R_L)^{-2} - 2R_L(R_s + R_L)^{-3}) = 0 \\
+	\frac{1}{(R_s + R_L)^2} &= \frac{2 R_L}{(R_s + R_L)^3} \\
+	R_s + R_L &= 2 R_L \\
+	R_L &= R_s
+\end{align}
+Calculating our values, 
+\begin{align}
+	V_L &= V_s \frac{R_L}{R_S + R_L} = (\SI{100}{\micro\volt}) \frac{50  \ \si{\ohm}}{100 \ \si{\ohm}} = \SI{50}{\micro\volt} \\
+	I_L &= \frac{V_s}{R_s + R_L} = \frac{100 \ \si{\micro\volt}}{2 \cdot 50 \ \si{\ohm}} = \SI{1}{\micro\ampere} \\
+	P_L &= \frac{V_s^2 R_L}{(R_s + R_L)^2} = \frac{(100 \ \si{\micro\volt})^2 \cdot 50 \ \si{\ohm}}{(100 \ \si{\ohm})^2} = \SI{50}{\pico\watt}
+\end{align}
+
+\subsection{}
+
+The optimal value of any antenna's ESR will always be exactly equal to that of the transmitter's ESR. 
+
+\section{Cell Phone Battery}
+
+\subsection{}
+
+Assuming the typical power draw of \SI{0.3}{\watt} and capacity of \SI{2.770}{\ampere\hour}, we find the current draw at \SI{3.8}{\volt}, 
+\begin{equation}
+	I = \frac{P}{V} = \frac{3}{38} \ \si{\ampere}
+\end{equation}
+Then, using the equation for current and solving for time, 
+\begin{equation}
+	t = \frac{Q}{I} \approx \SI{35.09}{\hour}
+\end{equation}
+
+\subsection{}
+
+Converting to coulombs, 
+\begin{equation}
+	\frac{2.770 \ \si{\ampere\hour}}{1} \cdot \frac{3600 \ \si{\second}}{1 \ \si{\hour}} = \SI{9972}{\ampere\second} = \SI{9972}{\coulomb}
+\end{equation}
+Converting to elementary charges, 
+\begin{equation}
+	\frac{9972 \ \si{\coulomb}}{1} \cdot \frac{1 \ \si{\elementarycharge}}{\num{1.602176634d-19} \ \si{\coulomb}} = \SI{6.22403285d22}{\elementarycharge}
+\end{equation}
+
+\subsection{}
+
+Using the equation for power and integrating with respect with time, 
+\begin{equation}
+	\int P \, dt = U = I V t = QV = (\SI{9972}{\coulomb})(\SI{3.8}{\volt}) = \SI{37893.6}{\joule}
+\end{equation}
+
+\subsection{}
+
+First, we can convert the price per kilowatt-hour into joules to simplify calculation, 
+\begin{equation}
+	\frac{\$0.12}{1000 \ \si{\watt\hour}} \cdot \frac{1 \ \si{\hour}}{3600 \ \si{\second}} \approx \$ \SI{3.33d-8}{\per\joule}
+\end{equation}
+Then we simply multiply that value by the total energy of our battery, multiplied by the number of days, 
+\begin{equation}
+	\text{Price} = \$ \SI{3.33d-8}{\per\joule} \cdot \SI{37893.6}{\joule} \cdot 31 \approx \$	0.04
+\end{equation}
+
+\subsection{}
+
+Using the equation from Problem 2,
+\begin{equation}
+	P_{R_{\text{bat}}} = \frac{25 R_{\text{bat}}}{(0.2 \ \si{\ohm} + R_{\text{bat}})^2}
+\end{equation}
+Our dissipated power is 
+\begin{align}
+	\SI{1}{\milli\ohm} &\Rightarrow \frac{25 \cdot 1 \ \si{\milli\ohm}}{(201 \ \si{\milli\ohm})^2} \approx \SI{618.80}{\milli\watt} \\
+	\SI{1}{\ohm} &\Rightarrow \frac{25 \cdot 1 \ \si{\ohm}}{(1.2 \ \si{\ohm})^2} \approx \SI{17.36}{\watt} \\
+	\SI{10}{\kilo\ohm} &\Rightarrow \frac{25 \cdot 10 \ \si{\kilo\ohm}}{(0.2 \ \si{\ohm} + 10 \ \si{\kilo\ohm})^2} \approx \SI{2.5}{\milli\watt}
+\end{align}
+Using the equation for energy and rearranging for time such that \(t = \frac{U}{P}\), we can use \(U = \SI{37893.6}{\joule}\) and the given power draws, 
+\begin{align}
+	t_{0.1} &= \SI{6.12d4}{\second} \\
+	t_1 &= \SI{2.18d3}{\second} \\
+	t_{10000} &= \SI{1.51d7}{\second}
+\end{align}
+
+\section{Measuring Voltage and Current}
+
+\subsection{}
+
+First, we calculate the equivalent resistance of \(R_2, R_{\text{VM}}\), 
+\begin{equation}
+	R_{eq} = R_2 \parallel R_{\text{VM}} \approx \SI{199.96}{\ohm}
+\end{equation}
+Then, since the voltmeter is in parallel with \(R_2\), the voltage measured across it should be the same as the voltage measured across \(R_{eq}\), which is 
+\begin{equation}
+	V_{R_{eq}} = V_S \frac{R_{eq}}{R_1 + R_{eq}} \approx \SI{3.33}{\volt}
+\end{equation}
+
+\subsection{}
+
+Repeating with \(R_1 = R_2 = \SI{10}{\mega\ohm}\), 
+\begin{align}
+	R_{eq} &= R_2 \parallel R_{\text{VM}} = \SI{0.91}{\mega\ohm} \\
+	V_{R_{eq}} &= V_S \frac{R_{eq}}{R_1 + R_{eq}} \approx \SI{0.42}{\volt}
+\end{align}
+The voltmeter is no longer reliable because ideally, the voltmeter should measure \SI{2.5}{\volt}, but since the voltmeter's resistance is now within an order of magnitude of the circuit elements' resistance, it is changing the behavior of the circuit. 
+
+\subsection{}
+
+The theoretical value of the voltage across \(R_2\), i.e. \(v_{\text{out}}\), should be \SI{2.5}{\volt} due to KVL. 
+Using the equation for percent change, 
+\begin{align}
+	-0.1 &\le \frac{v_{\text{meas}} - v_{\text{out}}}{v_{\text{out}}} \le 0.1 \\
+	-0.1 v_{\text{out}} &\le v_{\text{meas}} - v_{\text{out}} \le 0.1 v_{\text{out}} \\
+	2.25 &\le v_{\text{meas}} \le 2.75
+\end{align}
+Thus, we have two bounds for which to find the resistance for. Solving for the lower bound, 
+\begin{align}
+	2.25 &\le 5 \frac{R_{1} \parallel 10^6}{R_1 + R_{1} \parallel 10^6} \\
+	0.45R_1 + 0.45 (R_{1} \parallel R_{\text{VM}}) &\le R_{1} \parallel R_{\text{VM}} \\
+	0.45R_1 &\le 0.55\left(\frac{1}{R_1} + 10^{-6}\right)^{-1} \\
+	\frac{11}{9R_1} - \frac{1}{R_1} &\ge 10^{-6}
+\end{align}
+Doing the same for the upper bound, 
+\begin{align}
+	2.75 &\ge 5 \frac{R_{1} \parallel 10^6}{R_1 + R_{1} \parallel 10^6} \\
+	0.55R_1 + 0.55 (R_{1} \parallel R_{\text{VM}}) &\ge R_{1} \parallel R_{\text{VM}} \\
+	0.55R_1 &\ge 0.45\left(\frac{1}{R_1} + 10^{-6}\right)^{-1} \\
+	\frac{9}{11R_1} - \frac{1}{R_1} &\le 10^{-6}
+\end{align}
+Through some simple graphing, we find that the largest value of \(R_1\) that satisfies these constraints is \(R_2 = \frac{\num{2d6}}{9} \ \si{\ohm}\). 
+
+\subsection{}
+
+The current through \(R_1\) theoretically is \(I = \frac{V}{R} = \SI{5}{\milli\ampere}\). With the voltmeter connected, the current through is (ignoring units) \(V_{\text{VM}}\), 
+\begin{equation}
+	V_{\text{VM}} = 5\frac{(1 \parallel 10^6) \ \si{\ohm}}{1 \ \si{\kilo\ohm} + (1 \parallel 10^6) \ \si{\ohm}} \approx \SI{4.995}{\milli\ampere}
+\end{equation}
+
+\subsection{}
+
+We can construct a similar inequality to the one from Subproblem 4.c, 
+\begin{equation}
+	\num{4.5d-3} \le I_{\text{meas}} \le \num{5.5d-3}
+\end{equation}
+Our new lower bound is 
+\begin{align}
+	\num{4.5d-3} &\le 5\frac{1 \parallel 10^6}{R_1 + (1 \parallel 10^6)} \\
+	\num{4.5d-3} (R_1 + (1 \parallel 10^6)) &\le 5 (1 \parallel 10^6) \\
+	R_1 &\le \frac{991}{9} (1 \parallel 10^6) \approx \SI{110.11}{\ohm}
+\end{align}
+For the upper bound, 
+\begin{align}
+	\num{5.5d-3} &\ge 5\frac{1 \parallel 10^6}{R_1 + (1 \parallel 10^6)} \\
+	\num{5.5d-3} (R_1 + (1 \parallel 10^6)) &\ge 5 (1 \parallel 10^6) \\
+	R_1 &\ge \frac{9989}{11} (1 \parallel 10^6) \approx \SI{908.09}{\ohm}
+\end{align}
+meaning our maximum value of \(R_1\) is about \SI{909.09}{\ohm}. 
+
+\stepcounter{section}
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+I did this homework by myself. 
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

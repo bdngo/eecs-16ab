@@ -1,0 +1,338 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+\newcommand{\Span}{\operatorname{span}}
+
+\title{EECS 16B HW07}
+\author{Bryan Ngo}
+\date{2020-03-16}
+
+\begin{document}
+
+\maketitle
+
+\section{LED Strip}
+
+\subsection{}
+
+We can use a vector \(\bm{x}\) that represents the brightness of all the LEDs,
+\begin{equation}
+	\bm{x} = \begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3 \\
+	x_4 \\
+	x_5
+	\end{bmatrix}
+\end{equation}
+where our input is the brightness of the left-most LED.
+We will assume leftmost to be the brightness \(x_1\).
+
+\subsection{}
+
+The system can be written is
+\begin{equation}
+	\bm{x}[t + 1] =
+	\begin{bmatrix}
+	0 & 0 & 0 & 0 & 0 \\
+	1 & 0 & 0 & 0 & 0 \\
+	0 & 1 & 0 & 0 & 0 \\
+	0 & 0 & 1 & 0 & 0 \\
+	0 & 0 & 0 & 1 & 0
+	\end{bmatrix} \bm{x}
+	+
+	\begin{bmatrix}
+	1 \\
+	0 \\
+	0 \\
+	0 \\
+	0
+	\end{bmatrix} u(t)
+\end{equation}
+
+\subsection{}
+
+\begin{proof}
+To prove controllability, we must prove that
+\begin{equation}
+	\Span\{\bm{u}, \bm{A}\bm{u}, \bm{A}^2 \bm{u}, \ldots, \bm{A}^{n - 1} \bm{u}\} = \mathbb{R}^n
+\end{equation}
+The system is controllable because every value of the state vector can be influenced by the input.
+This is because we have a sort of "daisy chain" between the LEDs, which means every brightness can be traced back to the input, with a certain delay.
+That is, we can change the brightness of any given LED at any time.
+\end{proof}
+
+\subsection{}
+
+\begin{equation}
+	x[0] = \begin{bmatrix}
+	0 \\
+	127 \\
+	0 \\
+	255 \\
+	0
+	\end{bmatrix}
+\end{equation}
+We can simply maintain this brightness by looping through the state vector's entries and pushing the next brightness.
+By \(t = 5\), the brightness will be the same.
+We can display any pattern by simply pushing the brightness one at a time.
+
+\section{Controllability in Circuits}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) to[V=\(V_s\), invert] (0, 2) to[C=\(C_1\), v=\(V_1\)] (2, 2) to[C=\(C_2\), v=\(V_2\), *-*] (4, 2) to[R=\(R\)] (4, 0) to[short] (0, 0)
+;\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+Performing KCL at the node between the capacitors and across the resistor and using KVL,
+\begin{align}
+	V_s - V_1 - V_2 - V_R &= 0 \\
+	C_2\diff{t} V_2 - C_1\diff{t} V_1 &= 0 \\
+	\frac{V_s - V_1 - V_2}{R} - C_2\diff{t} V_2 &= 0
+\end{align}
+In state space form,
+\begin{align}
+	\diff{t} \begin{bmatrix}
+	V_1 \\
+	V_2
+	\end{bmatrix} = \begin{bmatrix}
+	\frac{C_2}{C_1} \diff{t} V_2 \\
+	\frac{V_s - V_1 - V_2}{RC_2}
+	\end{bmatrix} &= \begin{bmatrix}
+	\frac{V_s - V_1 - V_2}{RC_1} \\
+	\frac{V_s - V_1 - V_2}{RC_2}
+	\end{bmatrix} \\
+	&= \begin{bmatrix}
+	-\frac{1}{RC_1} & -\frac{1}{RC_1} \\
+	-\frac{1}{RC_2} & -\frac{1}{RC_2}
+	\end{bmatrix} \begin{bmatrix}
+	V_1 \\
+	V_2
+	\end{bmatrix} + \begin{bmatrix}
+	\frac{1}{RC_1} \\
+	\frac{1}{RC_2}
+	\end{bmatrix} V_s
+\end{align}
+
+\subsection{}
+
+\begin{proof}
+At \(t = 2\), the span is
+\begin{equation}
+	\Span\left\{
+	\begin{bmatrix}
+	\frac{1}{RC_1} \\
+	\frac{1}{RC_2}
+	\end{bmatrix},
+	\begin{bmatrix}
+	-\frac{1}{R^2C_1^2} - \frac{1}{R^2C_1C_2} \\
+	-\frac{1}{R^2C_2C_1} - \frac{1}{R^2C_2^2}
+	\end{bmatrix}
+	\right\} = \mathbb{R}
+\end{equation}
+If we focus on the \(\bm{Ab}\) vector,
+\begin{equation}
+	\begin{bmatrix}
+	-\frac{1}{R^2C_1^2} - \frac{1}{R^2C_1C_2} \\
+	-\frac{1}{R^2C_2C_1} - \frac{1}{R^2C_2^2}
+	\end{bmatrix} = \begin{bmatrix}
+	\frac{1}{RC_1} \left(-\frac{1}{RC_1} - \frac{1}{RC_2}\right) \\
+	\frac{1}{RC_2} \left(-\frac{1}{RC_1} - \frac{1}{RC_2}\right)
+	\end{bmatrix} = \left(-\frac{1}{RC_1} - \frac{1}{RC_2}\right) \begin{bmatrix}
+	\frac{1}{RC_1} \\
+	\frac{1}{RC_2}
+	\end{bmatrix}
+\end{equation}
+Since \(\bm{Ab}\) is simply a scaled version of \(\bm{b}\), this means that the span does not increase from \(t = 1\) to \(t = 2\).
+Thus, the span will never increase and remain at \(\mathbb{R}\) and is uncontrollable.
+\end{proof}
+
+\subsection{}
+
+The system does not appear to be controllable because \(V_1\) is dependent on \(V_2\), as is seen in \textbf{Equation 8}.
+This means that \(V_1\) cannot be independently controlled by \(V_s\), our input.
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(0, 0) to[V=\(V_s\), invert] (0, 2) to[C=\(C_1 \parallel C_2\), v=\(V_C\)] (3, 2) to[R=\(R\)] (3, 0) to[short] (0, 0)
+;\end{circuitikz}
+\end{center}
+We can still control \(V_s\) in this system, but it is controllable now since every quantity is independently controllable via the input.
+
+\section{Controllability and Discretization}
+
+\begin{align}
+	\diff{t} p(t) &= v(t) \\
+	\diff{t} v(t) &= u(t)
+\end{align}
+
+\subsection{}
+
+Converting to matrix form,
+\begin{equation}
+	\diff{t} \begin{bmatrix}
+	p(t) \\
+	v(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	0 & 1 \\
+	0 & 0
+	\end{bmatrix}
+	\begin{bmatrix}
+	p(t) \\
+	v(t)
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	0 \\
+	1
+	\end{bmatrix} u(t)
+\end{equation}
+The span at \(t = 2\) are
+\begin{align}
+	&\Span\left\{
+	\begin{bmatrix}
+	0 \\
+	1
+	\end{bmatrix},
+	\begin{bmatrix}
+	1 \\
+	0
+	\end{bmatrix}
+	\right\} = \mathbb{R}^2
+\end{align}
+Since the two vectors are linearly independent (specifically, \(\unit{\imath}, \unit{\jmath}\)), the system spans the required space and is thus, controllable.
+
+\subsection{}
+
+Suppose we find the change in the state variables \(p(t), v(t)\) according to a change \(T\) in time,
+\begin{align}
+	p(t + T) - p(t) &= \int_t^{t + T} v(\tau) \, d\tau \\
+	v(t + T) - v(t) &= \int_t^{t + T} u(\tau) \, d\tau = T u(t)
+\end{align}
+Substituting \(v(\tau) = v(t) + (\tau - t) u(t)\),
+\begin{align}
+	p(t + T) - p(t) &= \int_t^{t + T} v(t) + (\tau - t) u(t) \, d\tau \\
+	&= T v(t) + \int_t^{t + T} (\tau - t) u(t) \, d\tau \\
+	&= \left.T v(t) + \frac{(\tau - t)^2}{2} u(t)\right|_t^{t + T} \\
+	&= T v(t) + \frac{T^2}{2} u(t)
+\end{align}
+In matrix form, our discretized state system is
+\begin{equation}
+	\begin{bmatrix}
+	p[t + 1] \\
+	v[t + t]
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	1 & T \\
+	0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+	p[t] \\
+	v[t]
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	\frac{T^2}{2} \\
+	T
+	\end{bmatrix} u[t]
+\end{equation}
+
+\subsection{}
+
+Our span at \(t = 2\) is
+\begin{equation}
+	\Span\left\{
+	\begin{bmatrix}
+	\frac{T^2}{2} \\
+	T
+	\end{bmatrix},
+	\begin{bmatrix}
+	\frac{3T^2}{2} \\
+	\frac{T^2}{2}
+	\end{bmatrix}
+	\right\} = \mathbb{R}^2
+\end{equation}
+By inspection, the two vectors are clearly able to span \(\mathbb{R}^2\), and thus the system is controllable.
+
+\section{Understanding the SIXT33N Car Control Model}
+
+\begin{equation}
+	v[k] = d[k + 1] - d[k] = \theta u[k] - \beta
+\end{equation}
+
+\subsection{}
+
+Setting \(v[k] = v^\ast\),
+\begin{equation}
+	u[k] = \frac{v^\ast + \beta}{\theta}
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	v[k] =
+	\begin{cases}
+	-\beta & u[k] = 0 \\
+	255\theta - \beta & u[k] = 255
+	\end{cases}
+\end{equation}
+We are able to slow the car down by reducing \(u[k]\).
+
+\subsection{}
+
+At \(u[k] = 0\), \(v[k] = -\beta\).
+This means that the car is supposedly going \emph{backwards}, contrary to our intuition, which should be at \(u[k] = 0\), \(v[k] = 0\).
+The model \emph{cannot} accurately describe this phenomenon.
+
+\subsection{}
+
+We can determine \(\theta_L, \theta_R, \beta_L, \beta_R\) simply by applying a series of known inputs and an expected series of velocity outputs and using statistical techniques like least squares to create \(\theta, \beta\).
+
+\subsection{}
+
+Since the velocity curve of SIXT33N is nonlinear, we need to restrict our speeds to a very small range.
+This makes the curve look linear around that range.
+Then, since \(\theta_L, \theta_R, \beta_L, \beta_R\) are separate values, we can use different parameters for each wheel, thus counteracting any deviance from the model.
+
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+\begin{enumerate}
+	\item I used the Lecture 7B notes and Discussion 8A solutions.
+	\item I worked on this homework by myself.
+	\item I worked on this homework in one sitting.
+	\item Perhaps a little more explanation on the work going through \textbf{3.b} since it was not discussed in lecture.
+	\item 4 hours.
+\end{enumerate}
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

@@ -1,0 +1,325 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage[output-complex-root=j]{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\lstset{
+	language=Python,
+	tabsize=4,
+	basicstyle=\ttfamily,
+	numbers=left,
+	numberstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	frame=single
+}
+
+\title{EECS 16B HW11}
+\author{Bryan Ngo}
+\date{2020-04-19}
+
+\begin{document}
+
+\maketitle
+
+\section{Eigenvalues of an Upper Triangular Matrix}
+
+\subsection{}
+
+\begin{genthm}
+Given a matrix \(\bm{A} \in \mathbb{C}^{n \times n}\) in the form
+\begin{equation}
+	\bm{A} =
+	\begin{bmatrix}
+	a_{11} & a_{12} & \cdots & a_{1n} \\
+	0 & a_{22} & \cdots & a_{2n} \\
+	\vdots & \vdots & \ddots & \vdots \\
+	0 & 0 & \cdots & a_{nn}
+	\end{bmatrix}
+\end{equation}
+\(\bm{A} - a_{kk} \bm{I}\) does not have full rank for some \(k \in [1, n]\).
+\end{genthm}
+
+\begin{proof}
+\begin{equation}
+	\bm{A} - a_{kk} \bm{I} =
+	\begin{bmatrix}
+	a_{11} - a_{kk} & a_{12} & a_{13} & a_{14} & \cdots & a_{1n} \\
+	0 & a_{22} - a_{kk} & a_{23} & a_{24} & \cdots & a_{2n} \\
+	\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+	0 & 0 & \cdots & a_{kk} - a_{kk} & \cdots & a_{kn} \\
+	\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+	0 & 0 & 0 & 0 & \cdots & a_{nn} - a_{kk}
+	\end{bmatrix} =
+	\begin{bmatrix}
+	a_{11} - a_{kk} & a_{12} & \cdots & a_{1n} \\
+	0 & a_{22} - a_{kk} & \cdots & a_{2n} \\
+	\vdots & \vdots & \ddots & \vdots \\
+	0 & 0 & \cdots & 0 \\
+	0 & 0 & \cdots & a_{nn} - a_{kk}
+	\end{bmatrix}
+\end{equation}
+\(\bm{A} - a_{kk} \bm{I}\) nulls one of the entries of the matrix.
+that means that when we back-substitute the values of the matrix from \(a_{nn} - a_{kk}\) upward, the \(k\)-th row does not have an unknown variable since it is nulled.
+In other words, you effectively lose a pivot when subtracting a diagonal entry.
+Therefore, the solution to the matrix will always be inconsistent.
+\end{proof}
+
+\subsection{}
+
+\begin{genthm}
+If \(\bm{A} - \lambda \bm{I}\) does not have full rank, then \(\lambda\) is a diagonal value of \(\bm{A}\).
+\end{genthm}
+
+\begin{proof}
+If \(\lambda \neq a_{kk}\), then all the diagonal entries will be nonzero, and thus there is a pivot in every column and has full rank.
+Inversely, since \(\bm{A} - \lambda \bm{I}\) is not full rank, there must be a zero along the diagonal given the result of \textbf{Theorem 1}.
+\end{proof}
+
+\section{SVD}
+
+\subsection{}
+
+\begin{genthm}
+Given some \(\bm{A} \in \mathbb{R}^{n \times n}\) and nonzero \(\bm{x} \in \mathbb{R}^n\), \(\|\bm{Ax}\| \geqslant \sigma_{min} \|\bm{x}\|\).
+\end{genthm}
+
+\begin{proof}
+\begin{align}
+	\|\bm{Ax}\|^2 &= \|\bm{U\Sigma}\tpose{\bm{V}}\bm{x}\|^2 \\
+	&= \|\bm{\Sigma x}\|^2 \\
+	&= \sum_{i = 1}^n (\sigma_i x_i)^2 \\
+	&= (\sigma_1 x_1)^2 + (\sigma_2 x_2)^2 + \cdots + (\sigma_{min} x_{min})^2 \\
+	&\geqslant \sigma_{min}^2 x_1^2 + \sigma_{min}^2 x_2^2 + \cdots \sigma_{min}^2 x_{min}^2
+\end{align}
+The above is true since singular values are, by definition, positive.
+Since the square root function is monotonically increasing, the inequality holds for the magnitude.
+\end{proof}
+
+\subsection{}
+
+\begin{align}
+	\bm{x} =
+	\begin{bmatrix}
+	\sin(\theta) \\
+	\cos(\theta)
+	\end{bmatrix}
+\end{align}
+The SVD of \(\bm{A}\) cannot be determined due to the fact that an inconsistency appears.
+Using the fact that \(\sigma_1, \sigma_2\) can be determined at the points were \(\bm{x} = \unit{\imath}, \unit{\jmath}\), respectively, we find \(\sigma_1 = \sigma_2 = 3.6\).
+However, when evaluating the magnitude at \(\theta = \frac{\pi}{4}\), we get the equation
+\begin{equation}
+	\left\|\frac{1}{\sqrt{2}}\begin{bmatrix}
+	3.6 \\
+	3.6
+	\end{bmatrix}\right\| \overset{?}{=} 5
+\end{equation}
+which is simply not true.
+
+\subsection{}
+
+\begin{align}
+	\|\bm{y}\| &= \|\bm{ABx}\| \\
+	&= \|\bm{U_A\Sigma_A}\tpose{\bm{V_A}}\bm{U_B\Sigma_B}\tpose{\bm{V_B}}\bm{x}\| \\
+	&= \|\bm{\Sigma_A}\bm{\Sigma_B}\bm{x}\| \leqslant \sigma_1^{(\bm{A})} \sigma_1^{(\bm{B})}
+\end{align}
+
+\section{Otto the Pilot}
+
+\begin{equation}
+	\lambda = v \pm j\omega
+\end{equation}
+
+\subsection{}
+
+The oscillatory transient can be described with the equation
+\begin{equation}
+	y = e^{vt} \sin(\omega t)
+\end{equation}
+Since the altitude at \SI{5}{\minute} is tangent to \(1 + e^{vt}\), we can simply solve for \(v\) by plugging known values from the graph,
+\begin{align}
+	1 + e^{v \cdot 5} &= 1.4843 \\
+	\Re(\lambda) = v &= \frac{\ln(1.4853 - 1)}{5} \approx -0.15
+\end{align}
+Then, to find \(\omega\), we simply find the wavelength, which is \(T = \SI{10}{\minute}\), so \(\Im(\lambda) = \omega = \frac{\pi}{T} \approx \SI{0.31}{\radian\per\minute}\).
+
+\subsection{}
+
+\begin{align}
+	\diff{t} \begin{bmatrix}
+	y(t) \\
+	\dot{y}(t)
+	\end{bmatrix} &=
+	\begin{bmatrix}
+	0 & 1 \\
+	a_1 & a_2
+	\end{bmatrix}
+	\begin{bmatrix}
+	y(t) \\
+	\dot{y}(t)
+	\end{bmatrix} \\
+	\det\left(\begin{bmatrix}
+	0 & 1 \\
+	a_1 & a_2
+	\end{bmatrix} - \lambda \bm{I}\right) &= \lambda^2 - a_2 \lambda - a_1 = 0
+\end{align}
+Plugging in our values of \(\lambda\),
+\begin{align}
+	\begin{bmatrix}
+	1 & \lambda_1 \\
+	1 & \lambda_2
+	\end{bmatrix}
+	\begin{bmatrix}
+	a_1 \\
+	a_2
+	\end{bmatrix} &=
+	\begin{bmatrix}
+	\lambda_1^2 \\
+	\lambda_2^2
+	\end{bmatrix} \\
+	\Rightarrow \begin{bmatrix}
+	a_1 \\
+	a_2
+	\end{bmatrix} &\approx
+	\begin{bmatrix}
+	-0.12 \\
+	-0.29
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	\det\left(\begin{bmatrix}
+	0 & 1 \\
+	a_1 & a_2
+	\end{bmatrix} - \lambda \bm{I}\right) &= \lambda^2 - a_2 \lambda - a_1 \\
+	\Rightarrow \lambda &= \frac{a_2}{2} \pm \sqrt{\frac{a_2^2}{4} - a_1}
+\end{align}
+If the system is to be critically damped, then the term inside the square root is to be zero, i.e.
+\begin{equation}
+	\frac{a_2^2}{4} = a_1 \Longrightarrow a_2 = \pm 2 \sqrt{a_1}
+\end{equation}
+
+\section{Balance -- Linearizing a Vector System}
+
+\begin{align}
+	(I_1 + (m_1 + m_2)L^2) \frac{d^2 \theta_2(t)}{dt^2} &= -K_t u(t) + (m_1 + m_2) L g \sin(\theta_1(t)) \\
+	I_2 \frac{d^2 \theta_2(t)}{dt^2} &= K_t u(t) \\
+	0.001\frac{d^2 \theta_2(t)}{dt^2} &= -0.025 u(t) + 0.1 \sin(\theta_1(t)) \\
+	(\num{5d-5})\frac{d^2 \theta_2(t)}{dt^2} &= 0.025 u(t)
+\end{align}
+
+\subsection{}
+
+The state model is
+\begin{equation}
+	\diff{t} \begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3
+	\end{bmatrix} =
+	\begin{bmatrix}
+	x_2 \\
+	100 \sin(x_1) \\
+	0
+	\end{bmatrix} +
+	\begin{bmatrix}
+	0 \\
+	-25 \\
+	500
+	\end{bmatrix} u(t)
+\end{equation}
+Our Jacobians are
+\begin{align}
+	\bm{A} &=
+	\begin{bmatrix}
+	0 & 1 & 0 \\
+	100 & 0 & 0 \\
+	0 & 0 & 0
+	\end{bmatrix} \\
+	\bm{B} &=
+	\begin{bmatrix}
+	0 \\
+	-25 \\
+	500
+	\end{bmatrix} \\
+	\Rightarrow \diff{t} \begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3
+	\end{bmatrix} &\approx
+	\begin{bmatrix}
+	0 & 1 & 0 \\
+	100 & 0 & 0 \\
+	0 & 0 & 0
+	\end{bmatrix}
+	\begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3
+	\end{bmatrix} +
+	\begin{bmatrix}
+	0 \\
+	-25 \\
+	500
+	\end{bmatrix} u(t)
+\end{align}
+
+\subsection{}
+
+\begin{equation}
+	\bm{\mathcal{C}} =
+	\begin{bmatrix}
+	0 & -25 & 0 \\
+	-25 & 0 & -2500 \\
+	500 & 0 & 0
+	\end{bmatrix} \Longrightarrow \operatorname{span}(\bm{\mathcal{C}}) = \mathbb{R}^3
+\end{equation}
+Since the system is controllable, we are able to assign arbitrary closed-loop eigenvalues.
+
+\subsection{}
+
+Using \lstinline|numpy|,
+\begin{lstlisting}
+import numpy as np
+import math
+
+
+A = np.array([
+	[0, 1, 0],
+	[100, 0, 0],
+	[0, 0, 0]
+])
+B = np.array([0, -25, 500])
+K = np.array([20, 5, 0.01])
+
+
+closed_loop = A + np.outer(B, K)
+print(np.linalg.eigvals(closed_loop))
+\end{lstlisting}
+We get \(\lambda \approx \num{-116.60}, \num{-1.70+1.20j}, \num{-1.70-1.20j}\).
+Since \(\Re(\lambda) < 0\), the system is indeed stable.
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

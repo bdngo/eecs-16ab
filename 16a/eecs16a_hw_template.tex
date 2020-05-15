@@ -1,0 +1,34 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm} % math tools, including proofs environment
+\usepackage{siunitx} % for proper units
+\usepackage[american]{circuitikz} % for drawing circuits
+\usepackage{bm} % matrix/vector notation
+\usepackage{graphicx} % for including pictures when the circuits get too big for CTiKz
+\usepackage{pdfpages} % for including iPython .pdfs
+
+\renewcommand{\thesection}{\arabic{section}} % question number
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}} % subquestion (do not fill name)
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}} % subsubquestion (do not fill name)
+
+\newtheorem{genthm}{Theorem} % use to denote any theorem
+
+% handy math commands
+\newcommand{\unit}[1]{\bm{\hat{#1}}} % vector hat
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle} % inner product
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!} % transpose
+
+%opening
+\title{EECS 16A HW}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+% uncomment to include iPython Notebook
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

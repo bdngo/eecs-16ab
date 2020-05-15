@@ -1,0 +1,292 @@
+\documentclass[]{article}
+\usepackage{fullpage}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{pgfplots}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\title{EECS 16B HW02}
+\author{Bryan Ngo}
+\date{2020-01-25}
+
+\begin{document}
+
+\maketitle
+
+\section{Fundamental Theorem of Solutions to Differential Equations}
+
+\subsection{}
+
+\begin{genthm}
+Given \(\phi_1(x) = e^x\) and \(\phi_2(x) = \sum_{n = 0}^{\infty} \frac{x^n}{n!}\), \(\phi_1(x) = \phi_2(x)\).
+\end{genthm}
+
+\begin{proof}
+Proving the derivative property,
+\begin{align}
+	\diff{x} \phi_1(x) &= \diff{x} e^x = e^x = \phi_1(x) \\
+	\diff{x} \phi_2(x) &= \diff{x} \sum_{n = 0}^{\infty} \frac{x^n}{n!} = \sum_{n = 0}^{\infty} \frac{\cancel{n} x^{n - 1}}{\cancel{n} (n - 1)!} = \sum_{n = 1}^{\infty} \frac{x^{n - 1}}{(n - 1)!} = \phi_2(x)
+\end{align}
+where we are allowed to shift the index because any singular \(n\) terms cancel to zero.
+Proving the initial condition,
+\begin{align}
+	\phi_1(0) &= e^0 = 1 \\
+	\phi_2(0) &= \sum_{n = 0}^{\infty} \frac{0^n}{n!} = \frac{0^0}{0!} + \cancel{\frac{0^1}{1!}} + \cancel{\frac{0^2}{2!}} + \cancel{\cdots} = 1
+\end{align}
+\end{proof}
+
+\subsection{}
+
+\begin{genthm}
+Given \(\phi_1(x) = \cos(x)\) and \(\phi_2(x) = \cos(-x)\), \(\phi_1(x) = \phi_2(x)\).
+\end{genthm}
+
+\begin{proof}
+Proving the derivatives,
+\begin{align}
+	\frac{d^2}{dx^2} \phi_1(x) &= \frac{d^2}{dx^2} \cos(x) = -\cos(x) = -\phi_1(x) \\
+	\frac{d^2}{dx^2} \phi_2(x) &= \frac{d^2}{dx^2} \cos(-x) =  -\cos(-x) = -\phi_2(x)
+\end{align}
+Proving the initial conditions,
+\begin{align}
+	\phi_1(x) &= \phi_2(x) = \cos(0) = 1 \\
+	\diff{x} \phi_1(0) &= -\sin(0) = 0 \\
+	\diff{x} \phi_2(0) &= \sin(0) = 0
+\end{align}
+\end{proof}
+
+\section{IC Power Supply}
+
+% TODO: FINISH
+
+\subsection{}
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel = {\(t [\si{\nano\second}]\)},
+		ylabel = {\(V_{out1}(t) [\si{\volt}]\)},
+		xmin = 0, xmax = 3,
+		ymin = 0, ymax = 4,
+		xtick = {0}, ytick = {0},
+		extra x ticks = {1, 2.1},
+		extra x tick labels = {\(T\), \(2T\)},
+		extra y ticks = {3},
+		extra y tick labels = {\SI{3}{\volt}},
+	]
+
+	\addplot[color=blue, mark=none] coordinates {
+		(0, 3) (1, 3) (1, 0) (1.1, 0) (1.1, 3) (2.1, 3) (2.1, 0)
+		(2.2, 0) (2.2, 3) (3, 3)
+	};
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+
+The generalized expression for \(V_{DD}\) can be represented with the differential equation
+\begin{align}
+	C \diff{t} V_{DD} + i(t) - \frac{V_s - V_{DD}}{R} &= 0 \\
+	\diff{t} V_{DD} + \frac{V_{DD}}{RC} = \frac{V_s}{RC} - \frac{i(t)}{C}
+\end{align}
+with \(i(0) = 0\).
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {\(C = \SI{1}{\pico\farad}\)},
+		xlabel = {\(t [\si{\nano\second}]\)},
+		ylabel = {\(V_{out1}(t) [\si{\volt}]\)},
+		xmin = 0, xmax = 3,
+		ymin = 0, ymax = 4,
+		xtick = {0}, ytick = {0},
+		extra x ticks = {1, 2.1},
+		extra x tick labels = {\(T\), \(2T\)},
+		extra y ticks = {3},
+		extra y tick labels = {\SI{3}{\volt}},
+	]
+	
+		\addplot[color=blue, mark=none] coordinates {
+			(0, 3) (1, 3) (1, 0) (1.1, 0) (1.1, 3) (2.1, 3) (2.1, 0)
+			(2.2, 0) (2.2, 3) (3, 3)
+		};
+	\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {\(C = \SI{1}{\nano\farad}\)},
+		xlabel = {\(t [\si{\nano\second}]\)},
+		ylabel = {\(V_{out1}(t) [\si{\volt}]\)},
+		xmin = 0, xmax = 3,
+		ymin = 0, ymax = 4,
+		xtick = {0}, ytick = {0},
+		extra tick style = {grid=major},
+		extra x ticks = {1, 2.1},
+		extra x tick labels = {\(T\), \(2T\)},
+		extra y ticks = {3},
+		extra y tick labels = {\SI{3}{\volt}},
+	]
+		
+		\addplot[domain=0:1, color=blue] {3*(1 - exp(-10*x))};
+		\addplot[domain=1:1.1, color=blue] {3*exp(-100*(x - 1))};
+		\addplot[domain=1.1:2.1, color=blue] {3*(1 - exp(-10*(x - 1.1)))};
+		\addplot[domain=2.1:2.2, color=blue] {3*exp(-100*(x - 2.1))};
+		\addplot[domain=2.2:3, color=blue] {3*(1 - exp(-10*(x - 2.2)))};
+	\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+	\begin{axis}[
+		title = {\(C = \SI{1}{\micro\farad}\)},
+		xlabel = {\(t [\si{\nano\second}]\)},
+		ylabel = {\(V_{out1}(t) [\si{\volt}]\)},
+		xmin = 0, xmax = 3,
+		ymin = 0, ymax = 4,
+		xtick = {0}, ytick = {0},
+		extra tick style = {grid=major},
+		extra x ticks = {1, 2.1},
+		extra x tick labels = {\(T\), \(2T\)},
+		extra y ticks = {3},
+		extra y tick labels = {\SI{3}{\volt}},
+	]
+	
+		\addplot[domain=0:1, color=blue] {3};
+		\addplot[domain=1:1.1, color=blue] {(-0.5/0.1)*(x - 1) + 3};
+		\addplot[domain=1.1:2.1, color=blue] {2.5};
+		\addplot[domain=2.1:2.2, color=blue] {(-0.5/0.1)*(x - 2.1) + 2.5};
+		\addplot[domain=2.2:3, color=blue] {2};
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+
+It is better to have a higher \(C\) than a higher \(R\).
+This is because a higher capacitance means that the capacitor will take longer to discharge completely, resisting larger changes in voltage, possibly outlasting \(t_p\).
+
+\section{Simple Scalar DEs Driven by an Input}
+
+\subsection{}
+
+\begin{proof}
+We will prove that \(\delta(t) = x_g(t) - y(t) = 0\), thuss proving uniqueness.
+First proving the initial conditions cancel,
+\begin{equation}
+	\delta(t) = x_g(0) - y(0) = x_0 - x_0 = 0
+\end{equation}
+Next, we prove uniqueness of the derivative:
+\begin{align}
+	\diff{t} \delta(t) &= \diff{t} (x_g - y) \\
+	&= \lambda x_g + \cancel{u(t)} - \lambda y - \cancel{u(t)} \\
+	&= \lambda (x_g - y)
+\end{align}
+\end{proof}
+
+\subsection{}
+
+\begin{proof}
+\begin{align}
+	x_c(t) &= x_0 e^{\lambda t} + \int_0^t u(\tau) e^{\lambda (t - \tau)} \, d\tau \\
+	x_c(0) &= x_0 \cancelto{1}{e^{\lambda \cdot 0}} + \cancel{\int_0^0 u(\tau) e^{\lambda (t - \tau)} \, d\tau} = x_0 \\
+	\diff{t} x_c(t) &= \lambda x_0 e^{\lambda t} + \underbrace{\int_0^t \frac{\partial}{\partial t} u(\tau) e^{\lambda (t - \tau)} \, d\tau}_{\text{Leibniz integral rule}} + \underbrace{u(t) \cancelto{1}{e^{\lambda (t - t)}}}_{\text{FTC}} \\
+	&= \lambda x_c(t) + \lambda \int_0^t u(\tau) e^{\lambda (t - \tau)} \, d\tau + u(t) \\
+	&= \lambda x_c(t) + u(t)
+\end{align}
+\end{proof}
+
+\subsection{}
+
+Plugging in,
+\begin{align}
+	x_c(t) &= x_0 e^{\lambda t} + \int_0^t e^{s \tau} e^{\lambda (t - \tau)} \, d\tau = x_0 e^{\lambda t} + \int_0^t e^{(s - \lambda) \tau + \lambda t} \, d\tau \\
+	&= x_0 e^{\lambda t} + \left.\frac{1}{s - \lambda} e^{(s - \lambda) \tau + \lambda t} \right|_0^t \\
+	&= x_0 e^{\lambda t} + \left(\frac{1}{s - \lambda} e^{st - \lambda t + \lambda t} \right) - \left(\frac{1}{s - \lambda} e^{\lambda t} \right) \\
+	&= x_0 e^{\lambda t} + \frac{1}{s - \lambda} (e^{st} - e^{\lambda t})
+\end{align}
+
+\subsection{}
+
+Plugging in,
+\begin{align}
+	x_c(t) &= x_0 e^{\lambda t} + \int_0^t e^{\lambda \tau} e^{\lambda (t - \tau)} \, d\tau = x_0 e^{\lambda t} + \int_0^t e^{\lambda t} \, d\tau \\
+	&= x_0 e^{\lambda t} + t e^{\lambda t} \, d\tau
+\end{align}
+
+\section{Op-Amp Stability}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}\draw
+	(-2, 2) to[short] (-1, 2) node[ocirc]{}
+	(-2, 0) to[short] (-1, 0) node[ocirc]{\ \(V_{in}\)}
+	(0, 0) node[ground]{} to[cvsource, v=\(G \Delta V\), invert] (0, 2) to[R=\(R_{out}\)] (2, 2) to[C=\(C_{out}\)] (2, 0) node[ground]{}
+	(2, 2) to[short] (4, 2) node[ocirc]{\ \(V_{out}\)}
+	(3, 2) to[short] (3, 3) to[short] (-2, 3) to[short] (-2, 2)
+;\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+The KCL equation for \(V_{out}\) is
+\begin{align}
+	C_{out} \diff{t} V_{out} - \frac{G (V_{in} - V_{out}) - V_{out}}{R_{out}} &= 0 \\
+	\diff{t} V_{out} = \frac{G V_{in} - (G + 1) V_{out}}{R_{out} C_{out}} &= \frac{G + 1}{R_{out} C_{out}} \left(\frac{G}{G + 1} V_{in} - V_{out}\right) \\
+	\int \frac{1}{\frac{G}{G + 1} V_{in} - V_{out}} \, dV_{out} &= \int \frac{G + 1}{R_{out} C_{out}} \, dt \\
+	-\ln\left|\frac{G}{G + 1} V_{in} - V_{out}\right| &= \frac{G + 1}{R_{out} C_{out}} t + K \\
+	V_{out}(t) &= \frac{G}{G + 1} V_{in} - V_0 \exp\left(-\frac{G + 1}{R_{out} C_{out}} t\right) \\
+	\lim_{t \to \infty} V_{out}(t) &= \frac{G}{G + 1} V_{in}
+\end{align}
+
+\subsection{}
+
+Using similar techniques,
+\begin{align}
+	C_{out} \diff{t} V_{out} - \frac{G (V_{out} - V_{in}) - V_{out}}{R_{out}} &= 0 \\
+	\diff{t} V_{out} = \frac{(G - 1) V_{out} - G V_{in}}{R_{out} C_{out}} &= \frac{G - 1}{R_{out} C_{out}} \left(V_{out} - \frac{G}{G - 1} V_{in}\right) \\
+	\int \frac{1}{V_{out} - \frac{G}{G - 1} V_{in}} \, dV_{out} &= \int \frac{G - 1}{R_{out} C_{out}} \, dt \\
+	\ln\left|V_{out} - \frac{G}{G - 1} V_{in}\right| &= \frac{G - 1}{R_{out} C_{out}} t + K \\
+	V_{out}(t) &= \frac{G}{G - 1} V_{in} + V_0 \exp\left(\frac{G - 1}{R_{out} C_{out}} t\right) \\
+	\lim_{t \to \infty} V_{out}(t) &= \pm \infty
+\end{align}
+Depending on the initial condition, the op-amp will rail either to the positive or negative.
+In fact, for \(V_{in} > 0\), the op-amp will rail negative due to the fact that when we solve for the initial condition, \(V_0 = -\frac{G}{G - 1} V_{in} < 0\).
+
+\subsection{}
+
+Given the \(V_{out}(t)\) from \textbf{4.b},
+\begin{equation}
+	\lim_{G \to \infty} V_{out}(t) = V_{in} - \cancel{V_0 \exp\left(\lim_{G \to \infty} -\frac{G + 1}{R_{out} C_{out}} t\right)} = V_{in}
+\end{equation}
+
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+\begin{enumerate}
+	\item I referred to my lecture notes.
+	\item I did this homework by myself.
+	\item I worked on this homework in one sitting, and revised it the day after.
+	\item 4 hours.
+\end{enumerate}
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

@@ -1,0 +1,31 @@
+# LaTeX stuff
+
+*.aux
+*.log
+*.out
+*.synctex.gz
+
+# iPython stuff
+
+*__pycache__/
+*.ipynb_checkpoints/
+*.DS_Store
+*.bat
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# LTSpice stuff
+
+*.raw
+*.op.raw
+
+# Misc
+
+16a/append_path
+sid.txt

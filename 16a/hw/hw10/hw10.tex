@@ -1,0 +1,147 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{circuitikz}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+%opening
+\title{EECS 16A HW10}
+\author{Bryan Ngo}
+\date{2019-11-06}
+
+\begin{document}
+
+\maketitle
+
+\section{Op-Amp in Negative Feedback}
+
+\subsection{}
+
+In an ideal op-amp, \(u_+ = u_-\), so \(u_+ - u_- = 0\). 
+
+\subsection{}
+
+\(v_x\) can be treated as the voltage divided from \(v_{out}\) across \(R_1\), or 
+\begin{equation}
+	v_x = v_{out} \frac{R_1}{R_1 + R_2}
+\end{equation}
+
+\subsection{}
+
+Performing KCL at the node between \(R_1, R_2\), \(I_{R_2} - I_{R_1} - I_{u_-}= 0\). 
+Since the current into the terminals of an ideal op-amp are always zero, \(I_{R_2} = I_{R_1}\). 
+Then, by the fact that \(v_s = v_x\)
+\begin{equation}
+	I_{R_1} = I_{R_2} = \frac{v_x}{R_1} = \frac{v_s}{R_1}
+\end{equation}
+
+\subsection{}
+
+Given the equation from 1.b, 
+\begin{align}
+	v_x &= v_{out} \frac{R_1}{R_1 + R_2} \\
+	\Rightarrow v_{out} &= v_x \frac{R_1 + R_2}{R_1} = v_x \left(1 + \frac{R_2}{R_1}\right) \\
+	&= v_s \left(1 + \frac{R_2}{R_1}\right)
+\end{align}
+
+\subsection{}
+
+The current \(i_L = \frac{v_{out}}{R}\). 
+By KCL, \(i_{\mathrm{VDD}} + \cancel{i_{u_+}} + \cancel{i_{u_-}} - i_{\mathrm{VSS}} - i_L = 0\), 
+\begin{equation}
+	\begin{cases}
+	i_{\mathrm{VDD}} - i_{\mathrm{VSS}} = \frac{v_{out}}{R} & v_{out} > 0 \\
+	i_{\mathrm{VSS}} - i_{\mathrm{VDD}} = \frac{v_{out}}{R} & v_{out} < 0
+	\end{cases}
+\end{equation}
+
+\subsection{}
+
+Given the fundamental op-amp equation
+\begin{align}
+	v_{out} &= A (v_s - v_x) \\
+	&= A \left(v_s - v_{out} \frac{R_1}{R_1 + R_2}\right) \\
+	v_{out} \left(1 + A \frac{R_1}{R_1 + R_2}\right) &= A v_s \\
+	&= \frac{A v_s}{1 + A \frac{R_1}{R_1 + R_2}} \cdot \frac{R_1 + R_2}{R_1 + R_2} \\
+	&= v_s \frac{A (R_1 + R_2)}{R_2 + R_1(A + 1)}
+\end{align}
+Plugging into the equation for \(v_x\) from 1.b, 
+\begin{equation}
+	v_x = v_s \frac{A (\cancel{R_1 + R_2})}{R_2 + R_1(A + 1)} \frac{R_1}{\cancel{R_1 + R_2}} = v_s \frac{AR_1}{R_2 + R_1 (A + 1)}
+\end{equation}
+This means \(v_x < v_s\) for any finite gain, independent of \(R\). 
+
+\subsection{}
+
+\begin{align}
+	\lim_{A \to \infty} v_{out} &= \lim_{A \to \infty} v_s \frac{A (R_1 + R_2)}{R_2 + R_1(A + 1)} = v_s \frac{R_1 + R_2}{R_1} = v_s \left(1 + \frac{R_2}{R_1}\right) \\
+	\lim_{A \to \infty} v_x &= \lim_{A \to \infty} v_s \frac{AR_1}{R_2 + R_1 (A + 1)} = v_s \frac{R_1}{R_1} = v_s
+\end{align}
+
+\subsection{}
+
+Solving for \(G_{min} = 1.98\), or the smallest gain, 
+\begin{align}
+	G_{min} &= \frac{v_{out}}{v_s} = \frac{A (R_1 + R_2)}{R_2 + R_1(A + 1)} = 1.98 \\
+	A (R_1 + R_2) &= 1.98 (R_2 + A R_1 + R_1) \\
+	A (R_1 + R_2) - 1.98 A R_1 &= 1.98 (R_1 + R_2) \\
+	A &= \frac{1.98 (R_1 + R_2)}{0.02 R_1 + R_2}
+\end{align}
+
+\section{Capacitive Touchscreen}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}[american]
+	\draw (0, 0) node[ocirc]{\, \(E_2\)} to[C=\(C_0\)] (0, 4) node[ocirc]{\, \(E_1\)};
+\end{circuitikz} \hspace{10 mm}
+\begin{circuitikz}[american]
+	\draw (2, 0) node[ocirc]{\, \(E_2\)} to[short] (0, 0) to[short] (0, 1);
+	\draw (-1, 1) to[short] (1, 1);
+	\draw (-1, 1) to[C=\(C_{F - E_2}\)] (-1, 3);
+	\draw (1, 1) to[C=\(C_0\)] (1, 2) to[C=\(C_{E_1 - F}\)] (1, 3);
+	\draw (-1, 3) to[short] (1, 3);
+	\draw (0, 3) to[short] (0, 4) node[ocirc]{\, \(F\)};
+	\draw (1, 2) to[short] (2, 2) node[ocirc]{\, \(E_1\)};
+;\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+\begin{align}
+	C_0 &= \epsilon \frac{w_1 \cdot d_2}{t_1} = \SI{4.43d-14}{\farad} \\
+	C_{F - E_2} &= \epsilon \frac{(w_2 - w_1) \cdot d_2}{t_2} = \SI{2.215d-14}{\farad} \\
+	C_{E_1 - F} &= \epsilon \frac{w_1 \cdot d_1}{t_2 - t_1} = \SI{4.43d-13}{\farad}
+\end{align}
+
+\subsection{}
+
+Trivially, the capacitance between \(E_1, E_2\) with no finger is \(C_0\). 
+We can calculate the equivalent capacitance between \(E_1, E_2\) when a finger is present as 
+\begin{equation}
+	C_0 + (C_{F - E_2} \parallel C_{E_1 - F})
+\end{equation}
+Since \(C_{F - E_2}, C_{E_1 - F} > 0\), the equivalent capacitance when a finger is present \emph{must} be greater than \(C_0\), with a difference of \(C_{F - E_2} \parallel C_{E_1 - F} \approx \SI{2.110d-14}{\farad}\). 
+
+\section{Homework Process and Study Group}
+
+I did this homework by myself. 
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

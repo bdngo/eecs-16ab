@@ -1,0 +1,185 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\title{EECS 16B HW06}
+\author{Bryan Ngo}
+\date{2020-03-12}
+
+\begin{document}
+
+\maketitle
+
+\section{Inverted Pendulum on a Rolling Cart}
+
+\subsection{}
+
+\begin{align}
+	\diff{t} \begin{bmatrix}
+	x_1(t) = \theta(t) \\
+	x_2(t) = \dot{\theta}(t) \\
+	x_3(t) = \dot{y}(t)
+	\end{bmatrix} =
+	\begin{bmatrix}
+	x_2 \\
+	\frac{1}{\ell \left(\frac{M}{m} + \sin^2(x_1) \right)} \left(-\frac{u}{m} \cos(x_1) - x_2^2 \ell \cos(x_1) \sin(x_1) + \frac{M + m}{m} g \sin(x_1)\right) \\
+	\frac{1}{\left(\frac{M}{m} + \sin^2(x_1) \right)} \left(\frac{u}{m} + x_2^2 \ell \sin(x_1) - g \sin(x_1) \cos(x_1) \right) \\
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	&\begin{bmatrix}
+	x_2 \\
+	\frac{1}{\ell \left(\frac{M}{m} + \sin^2(x_1) \right)} \left(-\frac{u}{m} \cos(x_1) - x_2^2 \ell \cos(x_1) \sin(x_1) + \frac{M + m}{m} g \sin(x_1)\right) \\
+	\frac{1}{\left(\frac{M}{m} + \sin^2(x_1) \right)} \left(\frac{u}{m} + x_2^2 \ell \sin(x_1) - g \sin(x_1) \cos(x_1) \right)
+	\end{bmatrix}_{x_1 = x_2 = x_3 = u = 0} \\
+	&\begin{bmatrix}
+	0 \\
+	\frac{1}{\ell \left(\frac{M}{m} + \sin^2(0) \right)} \left(-\frac{0}{m} \cos(0) - 0^2 \ell \cos(0) \sin(0) + \frac{M + m}{m} g \sin(0)\right) \\
+	\frac{1}{\left(\frac{M}{m} + \sin^2(0) \right)} \left(\frac{0}{m} + 0^2 \ell \sin(0) - g \sin(0) \cos(0) \right)
+	\end{bmatrix} =
+	\begin{bmatrix}
+	0 \\
+	0 \\
+	0
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+Given the linearization equation
+\begin{equation}
+	f(\bm{x}, \bm{u}) \approx f(\bm{x}^\ast, \bm{u}^\ast) + \nabla_{\bm{x}} f(\bm{x}^\ast, \bm{u}^\ast) (\bm{x} - \bm{x}^\ast) + \nabla_{\bm{u}} f(\bm{x}^\ast, \bm{u}^\ast) (\bm{u} - \bm{u}^\ast)
+\end{equation}
+we first find the Jacobians
+\begin{align}
+	\nabla_{\bm{x}} f(\bm{x}^\ast, \bm{u}^\ast) &=
+	\begin{bmatrix}
+		0 & 1 & 0 \\
+		\frac{M+m}{\ell m} g & 0 & 0 \\
+		\frac{m}{M} g & 0 & 0
+	\end{bmatrix} \\
+	\nabla_{\bm{u}} f(\bm{x}^\ast, \bm{u}^\ast) &=
+	\begin{bmatrix}
+	0 \\
+	-\frac{1}{\ell M} \\
+	\frac{1}{M}
+	\end{bmatrix}
+\end{align}
+So our final linearization is
+\begin{equation}
+	f(\bm{x}, \bm{u}) \approx \underbrace{\begin{bmatrix}
+		0 & 1 & 0 \\
+		\frac{M+m}{\ell m} g & 0 & 0 \\
+		\frac{m}{M} g & 0 & 0
+	\end{bmatrix}}_{\bm{A}} \bm{x} + \underbrace{\begin{bmatrix}
+	0 \\
+	-\frac{1}{\ell M} \\
+	\frac{1}{M}
+	\end{bmatrix}}_{\bm{B}} \bm{u}
+\end{equation}
+
+\section{Single Dimension Linearization}
+
+\begin{equation}
+	\diff{t} x(t) = \sin(x(t)) + u(t)
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	x^{\ast} = \sin^{-1}(-u^\ast) = \{k \pi | k \in \mathbb{Z}^{[-4, 4]}\}
+\end{equation}
+
+\subsection{}
+
+\begin{align}
+	\partial_x f(x^\ast, u^\ast) &= \cos(0) = 1 \\
+	\partial_u f(x^\ast, u^\ast) &= 1 \\
+	\Rightarrow f(x, u) &\approx x + u
+\end{align}
+
+\subsection{}
+
+Finding the solution to the continuous-time solution and assuming a zero-hold interpolation,
+\begin{align}
+	x(t) &= x(nT) e^{t - nT} + \int_{kT}^t e^{t - \tau} u(\tau) \, d\tau \\
+	x((k + 1)T) &= x(kT) e^{T} + u(kT) \int_{kT}^{(k + 1)T} e^{(k + 1)T - \tau} d\tau \\
+	x[k + 1] &= e^T x[k] + (e^T - 1) u[k]
+\end{align}
+
+\section{Linearizing for Understanding Amplification}
+
+\subsection{}
+
+By Ohm's Law,
+\begin{equation}
+	I_C = \frac{V_{DD} - V_{out}}{R} \Longrightarrow V_{out} = V_{DD} - I_C R
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	m = \lim_{V_{in} \to V_{in}^\ast}\frac{I(V_{in}) - I_C^\ast}{V_{in} - V_{in}^\ast}
+\end{equation}
+Note that this is simply the definition of the derivative of \(I_C\) with respect to \(V_{in}\) at the point \(V_{in}^\ast\),
+\begin{equation}
+	m = \diff{V_{in}} I_C(V_{in}^\ast) = \frac{1}{V_{TH}} I_S e^{\frac{V_{in}^\ast}{V_{TH}}} = \frac{I_C^\ast}{V_{TH}}
+\end{equation}
+
+\subsection{}
+
+Substituting \(I_C\) into \textbf{3.a},
+\begin{align}
+	V_{out} &= V_{DD} - (I_{C}^\ast + m \, \delta V_{in)} R \\
+	&= \underbrace{(V_{DD} - I_C^\ast R)}_{V_{out}^\ast} - \frac{I_C^\ast}{V_{TH}} \, \delta V_{in} R \\
+	\Rightarrow \frac{\delta V_{out}}{\delta V_{in}} &= -\frac{I_C^\ast R}{V_{TH}}
+\end{align}
+
+\subsection{}
+
+\begin{equation}
+	\frac{\delta V_{out}}{\delta V_{in}} = -\frac{I_C^\ast R}{V_{TH}} = -\frac{\SI{1}{\milli\ampere} \cdot \SI{1}{\kilo\ohm}}{\SI{26}{\milli\volt}} \approx -38.5
+\end{equation}
+
+\subsection{}
+
+\begin{equation}
+	\frac{\delta V_{out}}{\delta V_{in}} = -\frac{I_C^\ast R}{V_{TH}} = -\frac{\SI{9}{\milli\ampere} \cdot \SI{1}{\kilo\ohm}}{\SI{26}{\milli\volt}} \approx -346.1
+\end{equation}
+
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+\begin{enumerate}
+	\item I referred to lecture notes
+	\item I worked on this homework by myself.
+	\item I worked on this homework on Sunday, then completed working on it on Thursday.
+	\item Some of the derivatives in \text{1.b} were quite unwieldy.
+	\item 3 hours.
+\end{enumerate}
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

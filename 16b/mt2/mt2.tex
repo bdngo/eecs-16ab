@@ -1,0 +1,470 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\title{EECS 16B MT2 Redo}
+\author{Bryan Ngo}
+\date{2020-04-17}
+
+\begin{document}
+
+\maketitle
+
+\section{}
+
+\begin{align}
+	\diff{t}S &= -\beta \frac{IS}{N} \\
+	\diff{t}I &= \beta \frac{IS}{N} - \gamma I \\
+	\diff{t}R &= \gamma I
+\end{align}
+The Jacobian is
+\begin{equation}
+	\begin{bmatrix}
+	-\beta \frac{I}{N} & -\beta \frac{S}{N} & 0 \\
+	\beta \frac{I}{N} & \beta \frac{S}{N} - \gamma & 0 \\
+	0 & \gamma & 0
+	\end{bmatrix} \Longrightarrow
+	\begin{bmatrix}
+	0 & -\beta & 0 \\
+	0 & \beta - \gamma & 0 \\
+	0 & \gamma & 0
+	\end{bmatrix}
+\end{equation}
+
+\section{}
+
+\begin{align}
+	\diff{t} \bm{x}(t) &= \bm{Ax}(t) + \bm{Bu}(t) \\
+	\bm{z}(t) &= \bm{Tx}(t) \\
+	\bm{\mathcal{C}} &=
+	\begin{bmatrix}
+	\bm{B} & \bm{AB} & \cdots & \bm{A}^{n - 1} \bm{B}
+	\end{bmatrix}
+\end{align}
+In terms of \(\bm{z}\), the system is
+\begin{equation}
+	\diff{t} \bm{z}(t) = \bm{TAT}^{-1} \bm{z}(t) + \bm{TBu}(t)
+\end{equation}
+The controllability matrix is
+\begin{equation}
+	\bm{\mathcal{C}}' =
+	\begin{bmatrix}
+	\bm{TB} & \bm{TAB} & \cdots & \bm{TA}^{n - 1}\bm{B}
+	\end{bmatrix} = \bm{T\mathcal{C}}
+\end{equation}
+
+\section{}
+
+\begin{align}
+	\bm{A} &=
+	\begin{bmatrix}
+	0 & 1 & 0 & 0 \\
+	0 & 0 & 2 & 0 \\
+	0 & 0 & 0 & 3 \\
+	0 & 0 & 0 & 0
+	\end{bmatrix} \\
+	\bm{A}\tpose{\bm{A}} &=
+	\begin{bmatrix}
+	1 & 0 & 0 & 0 \\
+	0 & 4 & 0 & 0 \\
+	0 & 0 & 9 & 0 \\
+	0 & 0 & 0 & 0
+	\end{bmatrix}
+\end{align}
+The SVD of \(\bm{A}\) is
+\begin{align}
+	\bm{U} &=
+	\begin{bmatrix}
+	0 & 0 & -1 & 0 \\
+	0 & 1 & 0 & 0 \\
+	-1 & 0 & 0 & 0 \\
+	0 & 0 & 0 & 1
+	\end{bmatrix} \\
+	\bm{\Sigma} &=
+	\begin{bmatrix}
+	3 & 0 & 0 & 0 \\
+	0 & 2 & 0 & 0 \\
+	0 & 0 & 1 & 0 \\
+	0 & 0 & 0 & 0
+	\end{bmatrix} \\
+	\tpose{\bm{V}} &=
+	\begin{bmatrix}
+	0 & 0 & 0 & -1 \\
+	0 & 0 & 1 & 0 \\
+	0 & -1 & 0 & 0 \\
+	1 & 0 & 0 & 0
+	\end{bmatrix}
+\end{align}
+
+\begin{enumerate}
+	\item By inspection, none of \(\bm{A}\tpose{\bm{A}}\)'s eigenvalues are similar to each other.
+	\item \(\bm{\Sigma}\) clearly shows the nonzero singular values of \(3, 2, 1\).
+	\item If we remove the last row, the last row of \(\bm{\Sigma}\) is removed, so the nonzero singular values remain unchanged.
+\end{enumerate}
+
+\section{}
+
+\begin{equation}
+	\bm{A} = \sigma_1 \bm{u}_1 \tpose{\bm{v}_1} + \sigma_2 \bm{u}_2 \tpose{\bm{v}_2} + \cdots
+\end{equation}
+\textbf{A} is true by definition of SVD.
+\textbf{B} is not true since in general \(\sigma_i = \sqrt{\lambda_i} \in \mathbb{C}\).
+If \(\lambda_i \in \mathbb{R}\), \(\sigma_i > 0\).
+\textbf{C} is not true by definition of the compact SVD, any matrix with rank \(r\) will have \(r\) nonzero eigenvalues.
+\textbf{D} is not true since all values can be multiplied by constant factors.
+
+\section{}
+
+\begin{align}
+	\diff{t}S &= -\beta \frac{IS}{N} \\
+	\diff{t}I &= \beta \frac{IS}{N} - \gamma I \\
+	\diff{t}R &= \gamma I
+\end{align}
+The system has infinitely many equilibrium points.
+Since \(I\) will be zero, \(S\) can be any number since it will be multiplied to zero.
+\(R\) can be any number since it doesn't appear in the state model.
+
+\section{}
+
+Since \(\bm{A}\) is doubled, its eigevalues are also doubled.
+Given the general solution to the vector case and a diagonalizable \(\bm{A}\),
+\begin{equation}
+	\bm{x}_d[k + 1] = \bm{V} e^{\bm{\Lambda}T} \bm{V}^{-1} \bm{x}_d[k]
+\end{equation}
+where \(\bm{\Lambda}, \bm{V}\) is a matrix containing the eigenvalues and eigenvectors, respectively.
+Since we are effectively doubling the term in the exponential, this is equivalent to squaring the entire discrete system.
+
+\section{}
+
+\begin{align}
+	\diff{t} \bm{x} &= \bm{Ax} + \bm{b}_1 u \\
+	\diff{t} \bm{x} &= \bm{Ax} + \bm{Bu} \\
+	\bm{B} &=
+	\begin{bmatrix}
+	b_1 & b_2
+	\end{bmatrix}
+\end{align}
+The system is already controllable, so by the Cayley-Hamilton theorem, adding new vectors does not change the span.
+
+\section{}
+
+\begin{equation}
+	\diff{t} \bm{x}(t) = \bm{Ax}(t) + \bm{Bu}(t)
+\end{equation}
+
+\begin{enumerate}
+	\item By definition of equilibrium, \(\bm{x}^\ast = -\bm{A}^{-1}\bm{Bu}^\ast\). Thus, for \(\bm{u} = \bm{0}\), \(\bm{x} = \bm{0}\).
+	\item Using the previous definition, this is false if \(\bm{A}\) is uninvertible.
+	\item By definition of an equilibrium point, \(\diff{t}\bm{x}(t) = 0 \ \forall t \geqslant 0\), so \(\bm{x}(t) = C \in \mathbb{R}\).
+	\item Using the very first definition, if \(\bm{A}\) is invertible, then there exists a unique mapping from \(\bm{u}^\ast\) to \(\bm{x}^\ast\).
+	\item This is trivial due to the linearity of the system.
+\end{enumerate}
+
+\section{}
+
+Since the system is defined in \(\mathbb{R}^3\), by Cayley-Hamilton the system is controllable in 3 steps.
+Thus, from any \(\bm{x}[0]\), we can reach any other \(\bm{x}[2]\) using a bounded set of inputs.
+
+\section{}
+
+\begin{equation}
+	\bm{A} =
+	\begin{bmatrix}
+	1 & 1 & 2 \\
+	2 & 2 & 4 \\
+	3 & 3 & 6 \\
+	4 & 4 & 8 \\
+	5 & 1 & 2
+	\end{bmatrix}
+\end{equation}
+A matrix has as many nonzero singular values as its rank, so since this matrix has linearly dependent rows up until the last one, it has \(r = 2\), and thus two nonzero singular values.
+
+\section{}
+
+\begin{equation}
+	\bm{y} = \bm{Dp} + \bm{e}
+\end{equation}
+Given the equation for least squares
+\begin{equation}
+	\unit{p} = (\tpose{\bm{D}} \bm{D})^{-1} \tpose{\bm{D}} \bm{y}
+\end{equation}
+it is clear that \(\tpose{\bm{D}} \bm{D}\) must be invertible to ensure a unique solution.
+
+\section{}
+
+\begin{gather}
+	x[t + 1] = b u[t] + e[t] \\
+	u[0] = u[1] = u[2] = u[3] = 1
+\end{gather}
+We simply set up the least squares problem
+\begin{equation}
+	\begin{bmatrix}
+	1 \\
+	1 \\
+	1 \\
+	1
+	\end{bmatrix}b =
+	\begin{bmatrix}
+	x[1] \\
+	x[2] \\
+	x[3] \\
+	x[4]
+	\end{bmatrix}
+\end{equation}
+Thus, we simply plug in various values of \(x[t]\) and find the least squares solution, arriving at
+\begin{equation}
+	\bm{x} =
+	\begin{bmatrix}
+	0.1 \\
+	1.1 \\
+	1.9 \\
+	0.9
+	\end{bmatrix}
+\end{equation}
+
+\section{}
+
+\begin{enumerate}
+	\item If \(\bm{Q}\tpose{\bm{Q}} = \bm{I}\), then \(\lambda = 1\), so \(\sigma = \sqrt{\lambda} = 1\).
+	\item The rank determines how many linearly independent eigenvectors exist. All linearly dependent eigenvectors are in the null space of \(\bm{A}\), and therefore have a zero singular value.
+	\item There are no restrictions on the dimensions or rank of \(\bm{A}\) in order to obtain its SVD.
+\end{enumerate}
+
+\section{}
+
+\begin{equation}
+	\diff{t} \bm{x}(t) = \bm{Ax}(t) + \bm{Bu}(t)
+\end{equation}
+
+\begin{enumerate}
+	\item The dimensions of \(\bm{x}, \bm{u}\) do not uniquely determine controllability, only \(\bm{A}, \bm{B}\).
+	\item We can uniquely determine the controllability matrix by knowing \(\bm{A}, \bm{B}\).
+	\item If \(m = n\), then we can uniquely determine the input sequence by inverting \(\bm{B}\).
+	\item If \(\bm{AB} = \bm{0}\), then all subsequent multiplications will also be \(\bm{0}\), so the rank will not change.
+	\item Rank does not determine controllability.
+\end{enumerate}
+
+\section{}
+
+\begin{equation}
+	\begin{bmatrix}
+	u[1] & u[0] \\
+	u[2] & u[1] \\
+	\vdots & \vdots \\
+	u[N] & u[N - 1]
+	\end{bmatrix}
+	\begin{bmatrix}
+	b_1 \\
+	b_2
+	\end{bmatrix} =
+	\begin{bmatrix}
+	y[2] \\
+	y[3] \\
+	\vdots \\
+	y[N + 1]
+	\end{bmatrix}
+\end{equation}
+We can replace the left column of the first matrix with the function definition,
+\begin{equation}
+	\begin{bmatrix}
+	\lambda u[0] & u[0] \\
+	\lambda u[1] & u[1] \\
+	\vdots & \vdots \\
+	\lambda u[N - 1] & u[N - 1]
+	\end{bmatrix}
+	\begin{bmatrix}
+	b_1 \\
+	b_2
+	\end{bmatrix} =
+	\begin{bmatrix}
+	y[2] \\
+	y[3] \\
+	\vdots \\
+	y[N + 1]
+	\end{bmatrix}
+\end{equation}
+Thus the system is linearly dependent and unsolvable.
+
+\section{}
+
+\begin{equation}
+	\diff{t} \begin{bmatrix}
+	x_1(t) \\
+	x_2(t)
+	\end{bmatrix} =
+	\begin{bmatrix}
+	x_1(t) x_2(t) \\
+	\cos\left(\frac{\pi}{2} x_1(t)\right)
+	\end{bmatrix} +
+	\begin{bmatrix}
+	x_1^2(t) \\
+	0
+	\end{bmatrix} u(t)
+\end{equation}
+Our linearizations are
+\begin{align}
+	\bm{A} &=
+	\begin{bmatrix}
+	1 & 1 \\
+	-\frac{\pi}{2} & 0
+	\end{bmatrix} \\
+	\bm{B} &=
+	\begin{bmatrix}
+	1 \\
+	0
+	\end{bmatrix}
+\end{align}
+
+\section{}
+
+By process of elimination, \textbf{A} has negative singular values, \textbf{B} is not full rank, \textbf{C} is wrong because the multiplication is incorrect, \textbf{D} has incorrect singular values.
+
+\section{}
+
+By KVL,
+\begin{align}
+	u - i_1 R_1 - L_1 \diff{t} i_1 &= 0 \\
+	u - i_2 R_2 - L_2 \diff{t} i_2 &= 0
+\end{align}
+Our state model is
+\begin{align}
+	\diff{t} \begin{bmatrix}
+	i_1 \\
+	i_2
+	\end{bmatrix} &=
+	\begin{bmatrix}
+	-\frac{R_1}{L_1} & 0 \\
+	0 & -\frac{R_2}{L_2}
+	\end{bmatrix} +
+	\begin{bmatrix}
+	\frac{1}{L_1} \\
+	\frac{1}{L_2}
+	\end{bmatrix} u \\
+	\bm{\mathcal{C}} &=
+	\begin{bmatrix}
+	\frac{1}{L_1} & -\frac{R_1}{L_1^2} \\
+	\frac{1}{L_2} & -\frac{R_2}{L_2^2}
+	\end{bmatrix}
+\end{align}
+In order to have an uncontrollable system, \(\frac{R_1}{L_1} = \frac{R_2}{L_2}\).
+Therefore, \(R_2 = \SI{2}{\milli\ohm}\).
+
+\section{}
+
+\begin{equation}
+	\bm{A} =
+	\sigma_1 \bm{u}_1 \tpose{\bm{v}_1} + \sigma_2 \bm{u}_2 \tpose{\bm{v}_2} + \sigma_3 \bm{u}_3 \tpose{\bm{v}_3}
+\end{equation}
+\(\bm{v}\tpose{\bm{v}} \neq 1\) because \(\bm{v}\tpose{\bm{v}}\) is the identity matrix, not a scalar.
+
+\section{}
+
+\begin{align}
+	\diff{t} x(t) &= (a - b y(t))x(t) \\
+	\diff{t} y(t) &= (c x(t) - d)y(t)
+\end{align}
+Let \(x^\ast = y^\ast = 0\).
+Then,
+\begin{equation}
+	\bm{A} =
+	\begin{bmatrix}
+	a & 0 \\
+	0 & -d
+	\end{bmatrix} \Longrightarrow \lambda = a, -d
+\end{equation}
+Similarly, let \(x^\ast = \frac{d}{c}, y^\ast = \frac{a}{b}\).
+Then,
+\begin{equation}
+	\bm{A} =
+	\begin{bmatrix}
+	0 & -\frac{bd}{c} \\
+	\frac{ac}{b} & 0
+	\end{bmatrix} \Longrightarrow \lambda = \pm j\sqrt{ad}
+\end{equation}
+
+\section{}
+
+\begin{equation}
+	\diff{t} \bm{x}(t) = \bm{Ax}(t) + \bm{Bu}(t)
+\end{equation}
+It is not possible to have two distinct equilibrium points for a linear system since that implies that the line defining the system in the state space has two zeros, which is impossible.
+
+\section{}
+
+In the case of \(\bm{A}\tpose{\bm{A}}\), every eigenvector \(\bm{v}\) can also be replaced with \(-\bm{v}\).
+The argument works the same with \(\tpose{\bm{A}}\bm{A}\) and \(\bm{u}\).
+Thus, there are two choices for every vector in the SVD, leading to \(2^n\) SVDs.
+
+\section{}
+
+\begin{equation}
+	\bm{B} =
+	\begin{bmatrix}
+	1 & 5 & 1 & 1 & 2 \\
+	2 & 7 & 2 & 9 & 4 \\
+	3 & 3 & 3 & 4 & 6
+	\end{bmatrix}
+\end{equation}
+By definition, a singular value \(\sigma \in \mathbb{R}^+\), so it has to be \(4.04\).
+
+\section{}
+
+\begin{equation}
+	x[t + 1] = a x[t] + b u(t) + e[t]
+\end{equation}
+The least squares equation is
+\begin{equation}
+	\begin{bmatrix}
+	1 & 1 \\
+	2 & 0 \\
+	1 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+	a \\
+	b
+	\end{bmatrix} =
+	\begin{bmatrix}
+	2 \\
+	1 \\
+	-2
+	\end{bmatrix}
+\end{equation}
+By least squares, we obtain \(a = \frac{1}{2}, b = -\frac{1}{2}\).
+
+\section{}
+
+\begin{equation}
+	\diff{t} \begin{bmatrix}
+	x_1(t) \\
+	x_2(t)
+	\end{bmatrix} =
+	\begin{bmatrix}
+	x_2(t) \\
+	u(t)
+	\end{bmatrix}
+\end{equation}
+Finding \(x_2(t)\),
+\begin{equation}
+	x_2(t + T) - x_2(t) = \int_t^{t + T} \diff{\tau} x_2(\tau) \, d\tau = T u(t)
+\end{equation}
+Since the component of \(\bm{B}\) in the discretization in \(x_2[t + 1]\) is one, \(T = 1\).
+
+\end{document}

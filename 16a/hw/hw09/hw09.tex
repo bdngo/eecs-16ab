@@ -1,0 +1,325 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{circuitikz}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+%opening
+\title{EECS 16A HW09}
+\author{Bryan Ngo}
+\date{2019-10-30}
+
+\begin{document}
+
+\maketitle
+
+\section{Thévenin and Norton Equivalent Circuits}
+
+In order to find \(V_{oc}\), we must find \(R_{eq}\), 
+\begin{gather}
+	R_{eq} = R_1 + (R_2 \parallel (R_3 + R_4)) = \SI{5}{\ohm} \\
+	I_{eq} = \frac{V}{R_eq} = \SI{2}{\ampere}
+\end{gather}
+By KVL, we know that the voltage going through the \(R_2 \parallel (R_3 + R_4)\) branch must be \SI{4}{\volt}. 
+Then, the current going through \(R_3 + R_4\) is \SI{0.66}{\ampere}. 
+Then, the voltage is 
+\begin{equation}
+	V_{oc} = \SI{0.66}{\ampere} \cdot R_3 = \SI{3}{\volt}
+\end{equation}
+Now, finding \(I_{sc}\), we short over \(R_3\). Finding the equivalent current, 
+\begin{gather}
+	R_{eq} = R_1 + (R_2 \parallel R_4) = \SI{4}{\ohm} \\
+	I_{eq} = \frac{V}{R_{eq}} = \SI{2.5}{\ampere}
+\end{gather}
+By KVL, the voltage of the parallel branch is \SI{2.5}{\volt}. 
+Then, the current is
+\begin{gather}
+	I_{sc} = \frac{V_{branch}}{R_4} = \SI{1.66}{\ampere} \\
+	R_{Th} = R_{N} = \frac{V_{oc}}{I_{sc}} = \SI{1,8}{\ohm}
+\end{gather}
+The Thévenin and Norton equivalents are
+\begin{center}
+\begin{circuitikz}[american]
+	\draw (0, 3) to[V_=\SI{3}{\volt}] (0, 0);
+	\draw (0, 3) to[R=\SI{1.8}{\ohm}] (3, 3);
+	\draw (3, 3) node[ocirc]{\, A};
+	\draw (0, 0) to[short] (3, 0) node[ocirc]{\, B};
+\end{circuitikz} \hfill
+\begin{circuitikz}[american]
+	\draw (0, 0) to[I_=\SI{1.66}{\ampere}] (0, 3);
+	\draw (2, 0) to[R=\SI{1.8}{\ohm}] (2, 3);
+	\draw (0, 3) to[short] (3, 3) node[ocirc]{\, A};
+	\draw (0, 0) to[short] (3, 0) node[ocirc]{\, B};
+\end{circuitikz}
+\end{center}
+
+\section{Superposition}
+
+Nulling the current source, 
+\begin{center}
+\begin{circuitikz}[american]
+	\draw (2, 0) to[V=\SI{5}{\volt}] (0, 0);
+	\draw (2, 0) to [R=\SI{3}{\ohm}] (4, 0);
+	\draw (4, 0) to[short] (4, 2);
+	\draw (0, 2) to[R=\SI{3}{\ohm},i=\(i\)] (4, 2);
+	\draw (0, 0) to[short] (0, 2);
+\end{circuitikz}
+\end{center}
+The current is simply
+\begin{equation}
+	i = I_{eq} = \frac{V}{R_{eq}} = \SI{0.833}{\ampere}
+\end{equation}
+Nulling the voltage source, 
+\begin{center}
+\begin{circuitikz}[american]
+	\draw (0, 0) to[R=\SI{3}{\ohm}] (6, 0);
+	\draw (6, 0) to[short] (6, 4);
+	\draw (6, 4) to[R=\SI{3}{\ohm}, i<_=\(i\)] (0, 4);
+	\draw (0, 4) to[short] (0, 0);
+	\draw (0, 2) to[R=\SI{1.5}{\ohm}] (2, 2);
+	\draw (4, 2) to[I= \SI{1}{\ampere}] (2, 2);
+	\draw (4, 2) to[R=\SI{1.5}{\ohm}] (6, 2);
+\end{circuitikz}
+\end{center}
+Since the circuit is symmetrical along the axis of current flow, it is easy to deduce that half of the current source current constitute \(i\), or \(i = \SI{0.5}{\ampere}\). \\
+\\
+By superposition, the total current is \(\sum i = \SI{1.333}{\ampere}\). 
+
+\section{Charge Sharing}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}[american, scale=0.6]
+	\draw (0, 4) to[V=\(V_s\)] (0, 0);
+	\draw (0, 0) node[ground]{};
+	\draw (0, 4) to[short] (4, 4);
+	\draw (4, 4) to[switch, l=\(\phi_1\)] (8, 4);
+	\draw (8, 4) to[switch, l=\(\phi_2\)] (12, 4);
+	\draw (12, 4) to[short] (16, 4) node[circ]{\, \(V_x\)};
+	\draw (16, 4) to[switch, l=\(\phi_1\)] (16, 0) node[ground]{};
+	\draw (4, 4) to[short] (4, 0);
+	\draw (8, 4) to[C=\(C\), v=\(\)] (8, 0);
+	\draw (12, 4) to[C=\(9C\), v=\(\)] (12, 0) node[ground]{};
+	\draw (4, 0) to[switch, l=\(\phi_2\)] (8, 0);
+	\draw (8, 0) to[switch, l=\(\phi_1\)] (12, 0);
+\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}[american, scale=0.6]
+	\draw (0, 4) to[V=\(V_s\)] (0, 0);
+	\draw (0, 0) node[ground]{};
+	\draw (0, 4) to[short] (4, 4);
+	\draw (4, 4) to[short, l=\(\phi_1\)] (8, 4);
+	\draw (12, 4) to[short] (16, 4) node[circ]{\, \(V_x\)};
+	\draw (16, 4) to[short, l=\(\phi_1\)] (16, 0) node[ground]{};
+	\draw (8, 4) to[C=\(C\), v=\(\)] (8, 0);
+	\draw (12, 4) to[C=\(9C\), v=\(\)] (12, 0) node[ground]{};
+	\draw (8, 0) to[short, l=\(\phi_1\)] (12, 0);
+\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+Finding the equivalent capacitance, 
+\begin{equation}
+	C_{eq} = C \parallel 9C = \frac{9}{10} C
+\end{equation}
+The charge on the equivalent capacitor, an thus the separate capacitors is
+\begin{equation}
+	Q_{eq} = \frac{9}{10} C V_{s}
+\end{equation}
+The voltage on \(C_1\) and \(C_2\)is 
+\begin{align}
+	V_{C_1} &= \frac{Q_{eq}}{C} = \frac{9}{10} V_s \\
+	V_{C_2} &= \frac{Q_{eq}}{9C} = \frac{1}{10} V_s
+\end{align}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}[american, scale=0.6]
+	\draw (0, 4) to[V=\(V_s\)] (0, 0);
+	\draw (0, 0) node[ground]{};
+	\draw (0, 4) to[short] (4, 4);
+	\draw (8, 4) to[short, l=\(\phi_2\)] (12, 4);
+	\draw (12, 4) to[short] (16, 4) node[circ]{\, \(V_x\)};
+	\draw (4, 4) to[short] (4, 0);
+	\draw (8, 4) to[C=\(C\), v=\(\)] (8, 0);
+	\draw (12, 4) to[C=\(9C\), v=\(\)] (12, 0) node[ground]{};
+	\draw (4, 0) to[short, l=\(\phi_2\)] (8, 0);
+\end{circuitikz}
+\end{center}
+
+\(V_x\) is nothing more than the voltage across the capacitor, since it can be expressed as the node voltage relative to ground. 
+We can determine the charge on the equivalent capacitor, and thus the separate capacitors, with KVL, 
+\begin{align}
+	V_s + V_{C_{eq}} &= 0 \\
+	V_s + \frac{10 Q_{eq}}{9 C} &= 0 \\
+	Q_{eq} &= -\frac{9}{10}C V_s
+\end{align}
+Then, the voltage on \(V_x\) is simply
+\begin{equation}
+	V_x = \frac{Q_{eq}}{9C} = -\frac{1}{10}V_s
+\end{equation}
+
+\section{Dynamic Random Access Memory}
+
+If we assume constant current leakage and capacitance, 
+\begin{align}
+	Q &= CV \\
+	\frac{dQ}{dt} = I &= C \frac{dV}{dt} \\
+	\int_{0}^{t} \frac{I}{C} \, dt &= \int_{0}^{t} dV \\
+	V(t) &= V(0) + \frac{I}{C} t
+\end{align}
+where \(V(0) = \SI{1.2}{\volt}, C = \SI{28d-15}{\farad}\). 
+If we set \(t = \SI{1}{\milli\second}, V(t) = \SI{0.9}{\volt}\), we can solve for I, 
+\begin{equation}
+	I = C \frac{V(t) - V(0)}{t} = (\SI{28d-15}{\farad}) \left(\frac{0.9 \ \si{\volt} - 1.2 \ \si{\volt}}{0.001 \ \si{\second}}\right) = \SI{-8.4d-12}{\ampere}
+\end{equation}
+
+\section{Current Sources and Capacitors}
+
+Since the capacitors are in series with a current source, the charge on both capacitors is simply \(Q = I_s t\). 
+Then, the voltage across \(C_2\) is 
+\begin{equation}
+	V = \frac{I_s t}{C_2}
+\end{equation}
+
+\section{Super-Capacitors}
+
+\subsection{}
+
+\begin{center}
+\begin{circuitikz}[american]
+	\draw (0, 0) to[C, v=\(\)] (0, 2);
+	\draw (0, 2) to[short] (2, 2);
+	\draw (2, 0) to[I=\(i_{load}\)] (2, 2);
+	\draw (2, 0) to[short] (0, 0);
+\end{circuitikz} \hspace{2 mm}
+\begin{circuitikz}[american]
+	\draw (0, 0) to[C, v=\(\)] (0, 2);
+	\draw (0, 2) to[C, v=\(\)] (2, 2);
+	\draw (2, 0) to[I_=\(i_{load}\)] (2, 2);
+	\draw (2, 0) to[short] (0, 0);
+\end{circuitikz}
+\begin{circuitikz}[american]
+	\draw (0, 0) to[C, v=\(\)] (0, 2);
+	\draw (0, 2) to[short] (4, 2);
+	\draw (4, 0) to[I_=\(i_{load}\)] (4, 2);
+	\draw (4, 0) to[short] (0, 0);
+	\draw (2, 0) to[C, v=\(\)] (2, 2);
+\end{circuitikz}
+\end{center}
+
+\subsection{}
+
+Using the derivation from Problem 4, and taking note of the orientation of the load, 
+\begin{align}
+	V_1(t) &= v_{init} - \frac{i_{load}}{C_{sc}}t \\
+	V_2(t) &= v_{init} - \frac{2 i_{load}}{C_{sc}}t \\
+	V_3(t) &= v_{init} - \frac{i_{load}}{2C_{sc}}t
+\end{align}
+
+\subsection{}
+
+At minimum, 
+\begin{align}
+	v_{min} &= v_{init} - \frac{i_{load}}{C_{sc}}t \\
+	&= v_{init} - \frac{2 i_{load}}{C_{sc}}t \\
+	&= v_{init} - \frac{i_{load}}{2C_{sc}}t
+\end{align}
+which means
+\begin{align}
+	t &= \frac{C_{sc}}{i_{load}}(v_{init} - v_{min}) \\
+	&= \frac{C_{sc}}{2i_{load}}(v_{init} - v_{min}) \\
+	&= \frac{2C_{sc}}{i_{load}}(v_{init} - v_{min})
+\end{align}
+
+\subsection{}
+
+Configuration 3 is better than configuration 2 whenever \(v_{init} > v_{min}\). 
+Observing the equations tells us that when this is satisfied, Config 3 has \emph{four times} the lifetime of Config 2. 
+
+\subsection{}
+
+We can express the change in energy of the capacitor as 
+\begin{equation}
+	\Delta E = E - E_0 = \frac{1}{2} (2C_{sc}) v_{min}^2 - \frac{1}{2} (2C_{sc}) v_{init}^2 = C_{sc} (v_{min}^2 - v_{init}^2)
+\end{equation}
+We set the final energy to be at \(v_{min}\) rather than \(0\) because that is the functional range of the capacitor. 
+
+\section{It's Finally Raining!}
+
+\subsection{}
+
+When the tank is full, the capacitance is 
+\begin{equation}
+	C = 81 \epsilon \frac{h_{tot} \cancel{w}}{\cancel{w}} = 81 \epsilon \cdot h_{tot}
+\end{equation}
+
+\subsection{}
+
+The capacitance of the water and air portions are
+\begin{align}
+	C_{water} &= 81 \epsilon \cdot h_{h2o} \\
+	C_{air} &= \epsilon (h_{tot} - h_{h2o}) \\
+	C_{tank} &= C_{air} + C_{water} = \epsilon (80 \cdot h_{h2o} + h_{tot})
+\end{align}
+
+\subsection{}
+
+Once more, we use the equation
+\begin{equation}
+	V_C(t) = \frac{I_s}{C_{tank}}t = \frac{I_C}{C_{tank}}t
+\end{equation}
+There is no initial voltage since \(V(0) = \SI{0}{\volt}\). 
+
+\subsection{}
+
+Ideally, the plot of the voltage-time graph should be a line. 
+Since we know that \(I_C\) is constant, the capacitance is simply the amount by which the current is attentuated through the graph. 
+From there, we use the equation from Problem 4.b to solve for the height. 
+
+\subsection{}
+
+In the case of a comparator, its output is 
+\begin{equation}
+	V_{comp} = 
+	\begin{cases}
+	1 & V_{C} > V_{ref} \\
+	-1 & \text{otherwise}
+	\end{cases}
+\end{equation}
+This means \(T_1\) occurs at the exact moment
+\begin{equation}
+	V_{ref} = \frac{I_C}{C} T_1 \Longrightarrow C = \frac{I_C}{V_{ref}}T_1
+\end{equation}
+
+\stepcounter{section}
+\stepcounter{section}
+
+\section{Homework Process and Study Group}
+
+I did this homework by myself. 
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}

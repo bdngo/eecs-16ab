@@ -1,0 +1,300 @@
+\documentclass[]{article}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{cancel}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage[american]{circuitikz}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{pdfpages}
+
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\roman{subsubsection}}
+
+\newtheorem{genthm}{Theorem}
+
+\newcommand{\unit}[1]{\bm{\hat{#1}}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\tpose}[1]{\left[#1\right]^{\! \top} \!\!}
+\newcommand{\diff}[1]{\frac{d}{d #1}}
+
+\title{EECS 16B MT1 Redo}
+\author{Bryan Ngo}
+\date{2020-03-12}
+
+\begin{document}
+
+\maketitle
+
+\section{CMOS Circuits}
+
+\begin{equation}
+	\begin{array}{c|c|l}
+	V_{in, 1} & V_{in, 2} & V_o \\
+	\hline
+	\SI{0}{\volt} & \SI{0}{\volt} & V_{DD} \\
+	V_{DD} & 0 & 0 \\
+	0 & V_{DD} & 0 \\
+	V_{DD} & V_{DD} & 0
+	\end{array}
+\end{equation}
+
+\section{Differential Equations}
+
+\subsection{}
+
+\begin{align}
+	\diff{t} M(t) &= -r M(t) \\
+	\int \frac{1}{M(t)} \, dM &= \int -r \, dt \\
+	\ln|M(t)| &= -rt + C \\
+	M(t) &= Ce^{-rt} \\
+	M(0) &= M_0 = C \\
+	\Rightarrow M(t) &= M_0 e^{-rt}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	\cancel{M_0} e^{-rt} &= \frac{1}{2} \cancel{M_0} \\
+	-rt &= \ln\left(\frac{1}{2}\right) = -\ln(2) \\
+	t &= \frac{\ln(2)}{r}
+\end{align}
+
+\section{Complex Numbers}
+
+\subsection{}
+
+\subsubsection{}
+
+\begin{align}
+	|1 + j| &= \sqrt{2} \\
+	\arg(1 + j) &= \frac{\pi}{4} \\
+	\Rightarrow 1 + j &= \sqrt{2} e^{j \frac{\pi}{4}}
+\end{align}
+
+\subsubsection{}
+
+\begin{equation}
+	\sqrt{j} = \sqrt{e^{j \frac{\pi}{2}}} = e^{j \frac{\pi}{4}}
+\end{equation}
+
+\subsection{}
+
+\subsubsection{}
+
+\begin{equation}
+	3e^{j \frac{\pi}{3}} = 3\left(\cos\left(\frac{\pi}{3}\right) + j \sin\left(\frac{\pi}{3}\right)\right) = \frac{3}{2} + j \frac{3\sqrt{3}}{2}
+\end{equation}
+
+\subsubsection{}
+
+\begin{equation}
+	-\sqrt{7} e^{j \pi} = \sqrt{7}
+\end{equation}
+
+\subsection{}
+
+\subsubsection{}
+
+\begin{proof}
+\begin{equation}
+	\frac{1}{j} \cdot \frac{j}{j} = \frac{j}{j^2} = -j
+\end{equation}
+\end{proof}
+
+\subsubsection{}
+
+\begin{proof}
+\begin{align}
+	\sin(2x) &= \frac{e^{2x} - e^{-2x}}{2j} =  \frac{(e^x)^2 - (e^{-x})^2}{2j} \\
+	&= \frac{(\cos{x} + j \sin{x})^2 - (\cos{x} - j \sin{x})^2}{2j} \\
+	&= \frac{\cancel{\cos^2(x)} + 2j \cos(x) \sin(x) - \cancel{\sin^2(x)} - \cancel{\cos^2(x)} + 2j \cos(x) \sin(x) + \cancel{\sin^2(x)}}{2j} \\
+	&= \frac{4j \cos(x) \sin(x)}{2j} = 2 \cos(x) \sin(x)
+\end{align}
+\end{proof}
+
+\section{Vector Differential Equation}
+
+\subsection{}
+
+To derive \(\bm{D}\),
+\begin{align}
+	\diff{t} \bm{z} &= \bm{Dz} \\
+	\diff{t} \bm{Tx} &= \bm{DTx} \\
+	\diff{t} \bm{x} &= \underbrace{\bm{T}^{-1}\bm{DT}}_{\bm{A}} \bm{x} \\
+	\Rightarrow \bm{D} &= \bm{TA}\bm{T}^{-1}
+\end{align}
+where \(\bm{T} = \bm{V}^{-1} = \begin{bmatrix}
+\bm{v}_1 & \bm{v}_2
+\end{bmatrix}^{-1}\).
+Thus,
+\begin{align}
+	\bm{T} &=
+	\begin{bmatrix}
+	j & -j \\
+	1 & 1
+	\end{bmatrix}^{-1} =
+	\frac{1}{2j} \begin{bmatrix}
+	1 & j \\
+	-1 & j
+	\end{bmatrix} \\
+	\bm{D} = \bm{TA}\bm{T}^{-1} &= \frac{1}{2j} \begin{bmatrix}
+	1 & j \\
+	-1 & j
+	\end{bmatrix}
+	\begin{bmatrix}
+	\alpha & -\omega \\
+	\omega & \alpha
+	\end{bmatrix}
+	\begin{bmatrix}
+	j & -j \\
+	1 & 1
+	\end{bmatrix} \\
+	&= \frac{1}{2j} \begin{bmatrix}
+	1 & j \\
+	-1 & j
+	\end{bmatrix}
+	\begin{bmatrix}
+	j\alpha - \omega & -j\alpha - \omega \\
+	j\omega + \alpha & -j\omega + \alpha
+	\end{bmatrix} \\
+	&= \frac{1}{2j} \begin{bmatrix}
+	j\alpha - \omega - \omega + j\alpha & \cancel{-j\alpha - \omega + \omega + j\alpha} \\
+	\cancel{-j\alpha + \omega - \omega + j\alpha} & j\alpha + \omega + \omega + j\alpha
+	\end{bmatrix} \\
+	&= -\frac{j}{2} \begin{bmatrix}
+	2j\alpha - 2\omega & 0 \\
+	0 & 2j\alpha + 2\omega
+	\end{bmatrix} = \begin{bmatrix}
+	\alpha + j\omega & 0 \\
+	0 & \alpha - j\omega
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	\diff{t} \bm{z} &= \begin{bmatrix}
+	\alpha + j\omega & 0 \\
+	0 & \alpha - j\omega
+	\end{bmatrix} \bm{z} \\
+	\Rightarrow \bm{z} &= \begin{bmatrix}
+	z_a e^{(\alpha + j\omega)t} \\
+	z_b e^{(\alpha - j\omega)t}
+	\end{bmatrix} \\
+	\bm{z}(0) = \bm{T}\bm{x}(0) &= -\frac{j}{2} \begin{bmatrix}
+	1 & j \\
+	-1 & j
+	\end{bmatrix}
+	\begin{bmatrix}
+	1 \\
+	0
+	\end{bmatrix} = \begin{bmatrix}
+		-\frac{j}{2} \\
+		\frac{j}{2}
+	\end{bmatrix}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+	\bm{x} = \bm{T}^{-1} \bm{z} &= \begin{bmatrix}
+	j & -j \\
+	1 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+	-\frac{j}{2} e^{(\alpha + j\omega)t} \\
+	\frac{j}{2} e^{(\alpha - j\omega)t}
+	\end{bmatrix} \\
+	x_1 &= \frac{1}{2} e^{(\alpha + j\omega)t} + \frac{1}{2} e^{(\alpha - j\omega)t} \\
+	&= e^{\alpha t} \left(\frac{e^{j \omega t} + e^{-j \omega t}}{2}\right) \\
+	&= e^{\alpha t} \cos(\omega t)
+\end{align}
+
+\section{Transient Identification}
+
+\subsection{\(v(t) = V_0 e^{\lambda t}, \lambda < 0\)}
+
+RC, RCRC. RL
+
+\subsection{\(v(t) = V_0 e^{jt}\)}
+
+None
+
+\subsection{\(v(t) = V_0 e^{\alpha t} \cos(\omega t), \alpha < 0\)}
+
+Underdamped RLC
+
+\subsection{\(v(t) = V_1 e^{\alpha t} + V_2 e^{\beta t}; \ \alpha, \beta < 0\)}
+
+RCRC, overdamped RLC
+
+\section{Phasors}
+
+\begin{center}
+\begin{tabular}{c||l|l}
+	& \textbf{Phasor} & \textbf{Waveform} \\
+	\hline
+	(a) & \(e^{j \frac{\pi}{2}}\) & 5 \\
+	(b) & \(3e^{j \frac{\pi}{2}}\) & 6 \\
+	(c) & \(1\) & 3 \\
+	(d) & \(e^{-j \frac{\pi}{2}}\) & 1 \\
+	(e) & \(e^{-j \pi}\) & 2 \\
+	(f) & \(e^{j \cdot 0} + e^{j \frac{\pi}{2}}\) & 4
+\end{tabular}
+\end{center}
+
+\section{Energy}
+
+\subsection{}
+
+\begin{center}
+\begin{tikzpicture}
+	\begin{axis}[
+		width = \textwidth,
+		height = \axisdefaultheight,
+		xlabel = \(t\),
+		ylabel = \(V_C\),
+		xmin = 0, xmax = 7,
+		ymin = 0.8, ymax = 1.2,
+		xtick = {0}, ytick = {0},
+		extra tick style = {grid=major},
+		extra x ticks = {1, 3, 4, 6, 7},
+		extra y ticks = {0.9, 1},
+		extra x tick labels = {\(t_1\), \(t_1 + T_{on}\), \(t_2\), \(t_2 + T_{on}\), \(T\)},
+		extra y tick labels = {\SI{0.9}{\volt}, \SI{1}{\volt}}
+	]
+		\addplot[domain=0:1, color=blue] {0.9};
+		\addplot[domain=1:3, color=red] {1 - 0.1*exp(-3*(x - 1))};
+		\addplot[domain=3:4, color=blue] {1};
+		\addplot[domain=4:6, color=red] {0.1*exp(-3*(x - 4)) + 0.9};
+		\addplot[domain=6:7, color=blue] {0.9};
+	\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{}
+
+Since the \SI{1.0}{\volt} source is only connected during the time \(t \in [t_1, t_1 + T_{on}]\), we only need to consider the change in voltage across those points.
+Using the definition of capacitance,
+\begin{equation}
+	Q = C \Delta V_c = C (1.0 - 0.9) = 0.1 C \, \si{\coulomb}
+\end{equation}
+
+\subsection{}
+
+Since at any given time \emph{at most} only one transistor with equivalent gate resistance is connected in series with the capacitor, the energy dissipated across the entire circuit is simply the change in energy across the capacitor from \(t \in [0, T]\).
+Since the change in energy of a capacitor is only dependent on voltage, we only concern ourselves with whenever the voltage changes, i.e. \(t \in [t_1, t_1 + T_{on}] \cup [t_2, t_2 + T_{on}]\),
+\begin{align}
+	\Delta E_{tot} &= |\left.\Delta E\right|_{t_1}^{t_1 + T_{on}} + \left.\Delta E\right|_{t_2}^{t_2 + T_{on}}| \\
+	&= \frac{1}{2} C(V(t_1 + T_{on})^2 - V(t_1)^2) + \frac{1}{2} C(V(t_2)^2 - V(t_2 + T_{on})^2) \\
+	&= C (1^2 - 0.9^2) = 0.19C \, \si{\joule}
+\end{align}
+
+\newpage
+
+%\includepdf[pages=-]{prob*.pdf}
+
+\end{document}
